@@ -46,15 +46,15 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 bg-black/80 dark:bg-white/90 backdrop-blur-md animate-fade-in overflow-y-auto"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="relative w-full max-w-5xl bg-[#0a0a0a] dark:bg-white border border-white/5 dark:border-stone-200 overflow-hidden flex flex-col md:flex-row rounded-modal shadow-modal transition-colors duration-500">
-        
-        <button 
+
+        <button
           onClick={onClose}
-          className="absolute top-6 right-6 z-50 p-2 text-white/50 dark:text-stone-300 hover:text-brand-heaven-gold transition-colors"
+          className="fixed top-4 right-4 md:absolute md:top-6 md:right-6 z-[110] p-2 bg-black/40 md:bg-transparent backdrop-blur-md md:backdrop-blur-none rounded-full text-white/90 md:text-white/50 dark:text-stone-300 hover:text-brand-heaven-gold transition-all shadow-lg md:shadow-none"
         >
           <X size={24} />
         </button>
@@ -62,10 +62,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
         <div className="flex flex-col md:flex-row w-full h-full">
           {/* Bio Image View */}
           <div className="relative w-full md:w-[45%] bg-black dark:bg-stone-100 flex flex-col overflow-hidden">
-            <div className="relative aspect-[3/4] md:aspect-auto md:h-full overflow-hidden">
-              <img 
+            <div className="relative aspect-[3/4] md:aspect-auto md:h-full overflow-hidden max-h-[45vh] md:max-h-none">
+              <img
                 key={imgSrc}
-                src={imgSrc} 
+                src={imgSrc}
                 alt={participant.name}
                 onError={handleImageError}
                 className={`w-full h-full object-cover transition-all duration-1000 ${isShowingPromo ? 'scale-105' : 'scale-100 brightness-90 dark:brightness-100'}`}
@@ -75,7 +75,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
 
             {participant.promoPhotoUrl && (
               <div className="absolute bottom-6 left-0 w-full px-6 z-20">
-                <button 
+                <button
                   onClick={() => {
                     setIsShowingPromo(!isShowingPromo);
                     setFallbackStage(0);
@@ -91,7 +91,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
 
           {/* Bio Text Content */}
           <div className="w-full md:w-[55%] p-8 md:p-14 lg:p-16 flex flex-col bg-[#0a0a0a] dark:bg-white overflow-y-auto max-h-[85vh] custom-scrollbar">
-            
+
             <div className="mb-12 flex flex-wrap gap-8">
               <div className="flex items-center gap-4">
                 <span className="text-3xl filter drop-shadow-md">{participant.country.flag}</span>
@@ -100,7 +100,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
                   <span className="text-[12px] font-avenir-medium text-white dark:text-black uppercase">{participant.country.name}</span>
                 </div>
               </div>
-              
+
               {participant.country.code !== participant.nationality.code && (
                 <div className="flex items-center gap-4 border-l border-white/10 dark:border-stone-200 pl-8">
                   <span className="text-3xl filter drop-shadow-md">{participant.nationality.flag}</span>
@@ -190,9 +190,9 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
                     <button onClick={() => onDelete?.(participant.id)} className="px-6 py-2.5 bg-red-500 text-white rounded-button text-[10px] font-avenir-bold uppercase hover:brightness-110 transition-all shadow-md">Delete</button>
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-10 opacity-80">
-                   <div className="flex flex-col">
+                  <div className="flex flex-col">
                     <span className="text-[8px] font-avenir-bold uppercase text-brand-heaven-gold mb-1">Secure Email</span>
                     <a href={`mailto:${participant.email}`} className="text-[12px] font-mono text-white dark:text-black hover:underline">{participant.email || 'None'}</a>
                   </div>
