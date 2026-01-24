@@ -302,7 +302,7 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
               <History size={14} className="text-brand-heaven-gold" /> Identity Ledger
             </h3>
             <div className="flex gap-4">
-              <button onClick={async () => { if (confirm('Wipe core?')) { await api.resetData(); window.location.reload(); } }} className="text-[10px] font-avenir-bold text-red-500/50 uppercase hover:text-red-500">Factory Reset</button>
+              <button onClick={async () => { if (confirm('WARNING: This will delete ALL participants from the Supabase database. Are you sure?')) { await api.resetData(); window.location.reload(); } }} className="text-[10px] font-avenir-bold text-red-500/50 uppercase hover:text-red-500">Factory Reset</button>
               <button onClick={() => { setIsAdding(true); onSetEditingId(null); setFormData({}); }} className="text-[10px] font-avenir-bold text-brand-heaven-gold uppercase hover:underline">Manual Initialization +</button>
             </div>
           </div>
