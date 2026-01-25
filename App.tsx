@@ -9,6 +9,7 @@ import { Participant, ViewMode, Country } from './types';
 import { api } from './services/api';
 import { COUNTRY_LIST, ALPHABET_GROUPS } from './constants';
 import { sortParticipants, normalizeString } from './utils';
+import { syncService } from './services/syncService';
 import { Search, ShieldCheck, Users, Loader2, LayoutGrid, Moon, Sun, Globe, Building, Briefcase } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -31,7 +32,44 @@ const App: React.FC = () => {
 
   const [filterLetter, setFilterLetter] = useState<string>('ALL');
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    loadData();
+    // Initial background sync after a short delay
+    const initialSyncTimer = setTimeout(() => {
+      performBackgroundSync();
+    }, 5000);
+
+    // Periodic sync every 15 minutes
+    const interval = setInterval(() => {
+      performBackgroundSync();
+    }, 15 * 60 * 1000);
+
+    return () => {
+      clearTimeout(initialSyncTimer);
+      clearInterval(interval);
+    };
+  }, []);
+
+  const performBackgroundSync = async () => {
+    const sheetUrl = localStorage.getItem('ls_sheet_url');
+    if (!sheetUrl) return;
+
+    try {
+      console.log('Starting background sync...');
+      const results = await syncService.fetchFromSheet(sheetUrl, participants);
+      if (results.valid.length > 0) {
+        await syncService.performSync(
+          results.valid,
+          undefined, // no progress reporting for bg sync
+          handleAdd,
+          handleUpdate
+        );
+        console.log('Background sync completed.');
+      }
+    } catch (err) {
+      console.error('Background sync failed:', err);
+    }
+  };
 
   useEffect(() => {
     if (darkMode) {

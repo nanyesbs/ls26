@@ -1,3 +1,5 @@
+import { COUNTRY_LIST } from './constants';
+import { Participant, Country } from './types';
 
 // Heuristic to detect and fix common "Double Encoding" (UTF-8 interpreted as Latin-1)
 // Examples: Ã« -> ë, Ã¶ -> ö, Ã© -> é
@@ -60,7 +62,9 @@ const CYRILLIC_TO_LATIN: Record<string, string> = {
  */
 export const convertDriveUrl = (url: string): string => {
     if (!url) return '';
-    if (!url.includes('drive.google.com')) return url;
+
+    // If it's already a direct data URL or non-drive URL, keep it
+    if (url.startsWith('data:') || !url.includes('drive.google.com')) return url;
 
     try {
         let fileId = '';
@@ -68,12 +72,29 @@ export const convertDriveUrl = (url: string): string => {
             fileId = url.split('id=')[1].split('&')[0];
         } else if (url.includes('/d/')) {
             fileId = url.split('/d/')[1].split('/')[0];
+        } else if (url.includes('/folders/')) {
+            // If it's a folder link, we can't show it as an image directly
+            return url;
         }
 
-        return fileId ? `https://drive.google.com/uc?id=${fileId}` : url;
+        // Use the uc?id= format which is generally more reliable for direct display
+        return fileId ? `https://drive.google.com/uc?id=${fileId}&export=download` : url;
     } catch (e) {
         return url;
     }
+};
+
+/**
+ * Strips emojis and special symbols for cleaner text comparison.
+ */
+export const stripEmojis = (str: string): string => {
+    if (!str) return '';
+    return str
+        .replace(/[\u{1F300}-\u{1F9FF}]/gu, '') // Basic emojis
+        .replace(/[\u{1F1E6}-\u{1F1FF}]{2}/gu, '') // Flag emojis
+        .replace(/[\u{2700}-\u{27BF}]/gu, '') // Dingbats
+        .replace(/\s+/g, ' ')
+        .trim();
 };
 
 export const normalizeString = (str: string): string => {
@@ -97,6 +118,19 @@ export const normalizeString = (str: string): string => {
         .replace(/[^A-Za-z0-9\s-]/g, "")
         .trim()
         .toUpperCase();
+};
+
+/**
+ * Finds a country by name or code, stripping emojis for comparison.
+ */
+export const findCountry = (nameOrCode: string): Country => {
+    if (!nameOrCode) return COUNTRY_LIST[0];
+    const input = stripEmojis(nameOrCode.toString()).trim().toLowerCase();
+    const found = COUNTRY_LIST.find(c =>
+        c.name.toLowerCase() === input ||
+        c.code.toLowerCase() === input
+    );
+    return found || COUNTRY_LIST[0];
 };
 
 /**

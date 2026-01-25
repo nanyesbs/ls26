@@ -3,7 +3,8 @@ import { Participant, Country } from '../types';
 import { ADMIN_PASSWORD, COUNTRY_LIST, getIdentityPlaceholder } from '../constants';
 import * as XLSX from 'xlsx';
 import { api } from '../services/api';
-import { sortParticipants, fixEncoding, processParticipant, normalizeString } from '../utils';
+import { syncService } from '../services/syncService';
+import { sortParticipants, fixEncoding, processParticipant, normalizeString, stripEmojis, findCountry } from '../utils';
 import {
   Lock, Edit2, Trash2, X, ShieldCheck,
   Image as ImageIcon, UploadCloud, Camera, History,
@@ -40,8 +41,8 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
   const [isImporting, setIsImporting] = useState(false);
   const [importProgress, setImportProgress] = useState('');
   const [importReport, setImportReport] = useState<ImportReport | null>(null);
-  const [pendingData, setPendingData] = useState<Omit<Participant, 'id'>[]>([]);
-  const [sheetUrl, setSheetUrl] = useState('');
+  const [pendingData, setPendingData] = useState<{ p: Omit<Participant, 'id'>, id?: string }[]>([]);
+  const [sheetUrl, setSheetUrl] = useState(() => localStorage.getItem('ls_sheet_url') || '');
 
   const importInputRef = useRef<HTMLInputElement>(null);
   const profileFileRef = useRef<HTMLInputElement>(null);
@@ -64,6 +65,12 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (sheetUrl) {
+      localStorage.setItem('ls_sheet_url', sheetUrl);
+    }
+  }, [sheetUrl]);
+
   const handleSave = async () => {
     if (!formData.name) return alert('Name is required.');
     try {
@@ -76,9 +83,10 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
 
   const findCountry = (nameOrCode: string): Country => {
     if (!nameOrCode) return COUNTRY_LIST[0];
+    const input = stripEmojis(nameOrCode.toString()).trim().toLowerCase();
     const found = COUNTRY_LIST.find(c =>
-      c.name.toLowerCase() === nameOrCode.toString().trim().toLowerCase() ||
-      c.code.toLowerCase() === nameOrCode.toString().trim().toLowerCase()
+      c.name.toLowerCase() === input ||
+      c.code.toLowerCase() === input
     );
     return found || COUNTRY_LIST[0];
   };
@@ -115,12 +123,17 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
 
   const processRows = (data: any[]) => {
     const results: ImportReport = { total: data.length, imported: 0, duplicates: 0, issues: [] };
-    const existingEmails = new Set(participants.map(p => p.email?.toLowerCase().trim()));
-    const validParticipants: Omit<Participant, 'id'>[] = [];
+    const emailToId = new Map<string, string>();
+    participants.forEach(p => {
+      if (p.email) emailToId.set(p.email.toLowerCase().trim(), p.id);
+    });
+    const validParticipants: { p: Omit<Participant, 'id'>, id?: string }[] = [];
 
     for (const row of data) {
       const email = (row['Email Address'] || row['Email'] || row['Email address'] || '').toString().toLowerCase().trim();
-      if (email && existingEmails.has(email)) { results.duplicates++; continue; }
+      if (!email) continue;
+
+      const existingId = emailToId.get(email);
 
       const rawData = {
         name: row['Full Name'] || row['Name'],
@@ -139,7 +152,8 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
       };
 
       const processed = processParticipant(rawData);
-      validParticipants.push(processed);
+      validParticipants.push({ p: processed, id: existingId });
+      if (existingId) results.duplicates++;
       results.imported++;
     }
     return { validParticipants, results };
@@ -147,30 +161,18 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
 
   const handleCloudSync = async () => {
     if (!sheetUrl) return alert('Enter Sheet URL');
-    let url = sheetUrl.trim();
-
-    // Convert regular Google Sheet URL to Export CSV URL
-    if (url.includes('docs.google.com/spreadsheets/d/')) {
-      const id = url.split('/d/')[1].split('/')[0];
-      url = `https://docs.google.com/spreadsheets/d/${id}/export?format=csv`;
-    }
-
     setIsImporting(true);
     setImportProgress('Fetching Cloud Data...');
 
     try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error('Network failure');
-      const text = await response.text();
-
-      // Use XLSX to parse CSV text
-      const wb = XLSX.read(text, { type: 'string' });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const data = XLSX.utils.sheet_to_json(ws) as any[];
-
-      const report = processRows(data);
-      setPendingData(report.validParticipants);
-      setImportReport(report.results);
+      const results = await syncService.fetchFromSheet(sheetUrl, participants);
+      setPendingData(results.valid);
+      setImportReport({
+        total: results.total,
+        imported: results.valid.length,
+        duplicates: results.duplicateCount,
+        issues: []
+      });
       setImportProgress('Ready to Commit');
     } catch (err) {
       alert('Cloud sync failed. Ensure the sheet is "Published to web" as CSV or set to "Anyone with link can view".');
@@ -181,12 +183,13 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
 
   const confirmImport = async () => {
     setIsImporting(true);
-    let count = 0;
     try {
-      for (const p of pendingData) {
-        setImportProgress(`Syncing ${++count} / ${pendingData.length}...`);
-        await onAdd(p);
-      }
+      await syncService.performSync(
+        pendingData,
+        (msg) => setImportProgress(msg),
+        onAdd,
+        onUpdate
+      );
       setPendingData([]); setImportReport(null);
       alert('Sync successful.');
     } catch {
