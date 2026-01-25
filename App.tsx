@@ -8,7 +8,7 @@ import AdminConsole from './components/AdminConsole';
 import { Participant, ViewMode, Country } from './types';
 import { api } from './services/api';
 import { COUNTRY_LIST, ALPHABET_GROUPS } from './constants';
-import { sortParticipants, normalizeString } from './utils';
+import { sortParticipants, normalizeString, convertDriveUrl } from './utils';
 import { syncService } from './services/syncService';
 import { Search, ShieldCheck, Users, Loader2, LayoutGrid, Moon, Sun, Globe, Building, Briefcase } from 'lucide-react';
 
@@ -57,21 +57,34 @@ const App: React.FC = () => {
   }, []);
 
   const performBackgroundSync = async () => {
-    const sheetUrl = localStorage.getItem('ls_sheet_url');
-    if (!sheetUrl) return;
-
     try {
-      console.log('Starting background sync...');
-      const results = await syncService.fetchFromSheet(sheetUrl, participantsRef.current);
-      if (results.valid.length > 0) {
-        await syncService.performSync(
-          results.valid,
-          undefined, // no progress reporting for bg sync
-          handleAdd,
-          handleUpdate
-        );
-        console.log('Background sync completed.');
-      }
+      // 1. Get the latest master sheet URL from Supabase settings
+      const settings = await api.getSettings();
+      const masterUrl = settings.sheet_url;
+
+      // Prefer master URL, fallback to local (for development/overrides)
+      const sheetUrl = masterUrl || localStorage.getItem('ls_sheet_url');
+
+      if (!sheetUrl) return;
+
+      console.log('Starting automated background sync...');
+      // 2. Perform efficient batch sync (direct DB upsert)
+      await syncService.batchSyncFromSheet(sheetUrl);
+
+      // 3. Reload data locally to reflect changes
+      const freshData = await api.getParticipants();
+
+      const correctedData = freshData.map(p => ({
+        ...p,
+        photoUrl: p.photoUrl?.includes('uc?id=') ? convertDriveUrl(p.photoUrl) : p.photoUrl,
+        promoPhotoUrl: p.promoPhotoUrl?.includes('uc?id=') ? convertDriveUrl(p.promoPhotoUrl) : p.promoPhotoUrl
+      }));
+
+      setParticipants(correctedData);
+      console.log('Automated sync completed successfully.');
+
+      // If we used a master URL, update local storage to match
+      if (masterUrl) localStorage.setItem('ls_sheet_url', masterUrl);
     } catch (err) {
       console.error('Background sync failed:', err);
     }
@@ -91,7 +104,15 @@ const App: React.FC = () => {
     try {
       setLoading(true);
       const data = await api.getParticipants();
-      setParticipants(data);
+
+      // Hotfix: Ensure any existing participants with broken Drive links are corrected on-the-fly
+      const correctedData = data.map(p => ({
+        ...p,
+        photoUrl: p.photoUrl?.includes('uc?id=') ? convertDriveUrl(p.photoUrl) : p.photoUrl,
+        promoPhotoUrl: p.promoPhotoUrl?.includes('uc?id=') ? convertDriveUrl(p.promoPhotoUrl) : p.promoPhotoUrl
+      }));
+
+      setParticipants(correctedData);
     } catch (err) {
       console.error('Core Offline');
     } finally {
@@ -207,10 +228,10 @@ const App: React.FC = () => {
                         onClick={() => setFilterLetter(char)}
                         disabled={!isAvailable}
                         className={`w-9 h-9 flex-shrink-0 flex items-center justify-center text-[11px] font-avenir-bold transition-all ${filterLetter === char
-                            ? 'bg-white dark:bg-black text-black dark:text-white'
-                            : isAvailable
-                              ? 'text-white/80 dark:text-black/80 hover:bg-white/10 dark:hover:bg-black/10 hover:text-white dark:hover:text-black'
-                              : 'text-white/10 dark:text-black/10 cursor-not-allowed'
+                          ? 'bg-white dark:bg-black text-black dark:text-white'
+                          : isAvailable
+                            ? 'text-white/80 dark:text-black/80 hover:bg-white/10 dark:hover:bg-black/10 hover:text-white dark:hover:text-black'
+                            : 'text-white/10 dark:text-black/10 cursor-not-allowed'
                           }`}
                       >
                         {char}

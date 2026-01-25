@@ -32,6 +32,25 @@ export const api = {
     return data as Participant;
   },
 
+  upsertParticipant: async (participant: Omit<Participant, 'id'>): Promise<Participant> => {
+    const { data, error } = await supabase
+      .from('participants')
+      .upsert(participant, { onConflict: 'email' })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data as Participant;
+  },
+
+  bulkUpsertParticipants: async (participants: Omit<Participant, 'id'>[]): Promise<void> => {
+    const { error } = await supabase
+      .from('participants')
+      .upsert(participants, { onConflict: 'email' });
+
+    if (error) throw error;
+  },
+
   updateParticipant: async (id: string, updates: Partial<Participant>): Promise<Participant> => {
     const { data, error } = await supabase
       .from('participants')
@@ -61,5 +80,13 @@ export const api = {
       .neq('id', '0'); // Safe way to clear all if allowed by RLS
 
     if (error) throw error;
+  },
+
+  getSettings: async (): Promise<Record<string, string>> => {
+    const { data, error } = await supabase.from('settings').select('*');
+    if (error) return {};
+    const settings: Record<string, string> = {};
+    data.forEach(s => settings[s.id] = s.value);
+    return settings;
   }
 };

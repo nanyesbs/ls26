@@ -77,8 +77,8 @@ export const convertDriveUrl = (url: string): string => {
             return url;
         }
 
-        // Use the uc?id= format which is generally more reliable for direct display
-        return fileId ? `https://drive.google.com/uc?id=${fileId}&export=download` : url;
+        // Use the thumbnail format which is much more reliable for direct embedding than uc?id=
+        return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000` : url;
     } catch (e) {
         return url;
     }
