@@ -3,21 +3,7 @@ import { Participant } from '../types';
 import { processParticipant, findCountry } from '../utils';
 
 export const syncService = {
-    fetchFromSheet: async (sheetUrl: string, existingParticipants: Participant[]) => {
-        let url = sheetUrl.trim();
-        if (url.includes('docs.google.com/spreadsheets/d/')) {
-            const id = url.split('/d/')[1].split('/')[0];
-            url = `https://docs.google.com/spreadsheets/d/${id}/export?format=csv`;
-        }
-
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Network failure');
-        const text = await response.text();
-
-        const wb = XLSX.read(text, { type: 'string' });
-        const ws = wb.Sheets[wb.SheetNames[0]];
-        const data = XLSX.utils.sheet_to_json(ws) as any[];
-
+    processDataRows: (data: any[], existingParticipants: Participant[]) => {
         const emailToId = new Map(existingParticipants.map(p => [p.email?.toLowerCase().trim(), p.id]));
         const results = {
             valid: [] as { p: Omit<Participant, 'id'>, id?: string }[],
@@ -53,6 +39,24 @@ export const syncService = {
         }
 
         return results;
+    },
+
+    fetchFromSheet: async (sheetUrl: string, existingParticipants: Participant[]) => {
+        let url = sheetUrl.trim();
+        if (url.includes('docs.google.com/spreadsheets/d/')) {
+            const id = url.split('/d/')[1].split('/')[0];
+            url = `https://docs.google.com/spreadsheets/d/${id}/export?format=csv`;
+        }
+
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Network failure');
+        const text = await response.text();
+
+        const wb = XLSX.read(text, { type: 'string' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const data = XLSX.utils.sheet_to_json(ws) as any[];
+
+        return syncService.processDataRows(data, existingParticipants);
     },
 
     performSync: async (

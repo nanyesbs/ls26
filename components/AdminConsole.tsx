@@ -81,15 +81,6 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
     } catch { alert('Sync failure check logs.'); }
   };
 
-  const findCountry = (nameOrCode: string): Country => {
-    if (!nameOrCode) return COUNTRY_LIST[0];
-    const input = stripEmojis(nameOrCode.toString()).trim().toLowerCase();
-    const found = COUNTRY_LIST.find(c =>
-      c.name.toLowerCase() === input ||
-      c.code.toLowerCase() === input
-    );
-    return found || COUNTRY_LIST[0];
-  };
 
   const handleFileImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -108,9 +99,14 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
         const ws = wb.Sheets[wb.SheetNames[0]];
         const data = XLSX.utils.sheet_to_json(ws) as any[];
 
-        const report = processRows(data);
-        setPendingData(report.validParticipants);
-        setImportReport(report.results);
+        const report = syncService.processDataRows(data, participants);
+        setPendingData(report.valid);
+        setImportReport({
+          total: report.total,
+          imported: report.valid.length,
+          duplicates: report.duplicateCount,
+          issues: []
+        });
       } catch (err) {
         alert('Data corruption in file.');
       } finally {
@@ -121,43 +117,6 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
     reader.readAsArrayBuffer(file);
   };
 
-  const processRows = (data: any[]) => {
-    const results: ImportReport = { total: data.length, imported: 0, duplicates: 0, issues: [] };
-    const emailToId = new Map<string, string>();
-    participants.forEach(p => {
-      if (p.email) emailToId.set(p.email.toLowerCase().trim(), p.id);
-    });
-    const validParticipants: { p: Omit<Participant, 'id'>, id?: string }[] = [];
-
-    for (const row of data) {
-      const email = (row['Email Address'] || row['Email'] || row['Email address'] || '').toString().toLowerCase().trim();
-      if (!email) continue;
-
-      const existingId = emailToId.get(email);
-
-      const rawData = {
-        name: row['Full Name'] || row['Name'],
-        country: findCountry(row['Country'] || row['Location'] || row['Residency']),
-        nationality: findCountry(row['Nationality'] || row['Country'] || row['Location']),
-        testimony: row['Short biography'] || row['Bio'] || row['Testimony'],
-        orgDescription: row['Description of your organization'] || row['Description'] || row['Org Description'],
-        photoUrl: row['Profile Picture of You'] || row['Profile picture'] || row['Photo URL'] || row['Photo'],
-        organization: row['Name of Ministry/Church/Organization/Business'] || row['Church / Organization'] || row['Organization'] || row['Ministry'] || row['Church'],
-        title: row['Role(s) in the organization'] || row['Role'] || row['Title'] || row['Position'],
-        promoPhotoUrl: row['Promotional Picture'] || row['Promo picture'] || row['Promo Photo'] || row['Promo'],
-        phone: row['Phone Number'] || row['Phone number'] || row['Phone'],
-        email: email,
-        website: row['Website'],
-        otherInfo: row['Other'] || row['Other Information'],
-      };
-
-      const processed = processParticipant(rawData);
-      validParticipants.push({ p: processed, id: existingId });
-      if (existingId) results.duplicates++;
-      results.imported++;
-    }
-    return { validParticipants, results };
-  };
 
   const handleCloudSync = async () => {
     if (!sheetUrl) return alert('Enter Sheet URL');

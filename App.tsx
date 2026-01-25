@@ -30,7 +30,13 @@ const App: React.FC = () => {
   const [filterMinistry, setFilterMinistry] = useState<string>('ALL');
   const [filterRole, setFilterRole] = useState<string>('ALL');
 
-  const [filterLetter, setFilterLetter] = useState<string>('ALL');
+  const [filterLetter, setFilterLetter] = React.useState<string>('ALL');
+
+  const participantsRef = React.useRef<Participant[]>([]);
+
+  useEffect(() => {
+    participantsRef.current = participants;
+  }, [participants]);
 
   useEffect(() => {
     loadData();
@@ -56,7 +62,7 @@ const App: React.FC = () => {
 
     try {
       console.log('Starting background sync...');
-      const results = await syncService.fetchFromSheet(sheetUrl, participants);
+      const results = await syncService.fetchFromSheet(sheetUrl, participantsRef.current);
       if (results.valid.length > 0) {
         await syncService.performSync(
           results.valid,
