@@ -77,8 +77,8 @@ export const convertDriveUrl = (url: string): string => {
             return url;
         }
 
-        // Use the thumbnail format which is much more reliable for direct embedding than uc?id=
-        return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000` : url;
+        // Use the lh3.googleusercontent.com CDN format which is the most reliable for public embedding
+        return fileId ? `https://lh3.googleusercontent.com/d/${fileId}` : url;
     } catch (e) {
         return url;
     }

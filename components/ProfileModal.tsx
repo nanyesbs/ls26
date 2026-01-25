@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Participant } from '../types';
-import { X, Mail, Globe, Phone, User, Sparkles, Shield, Building2, Info, PlusCircle } from 'lucide-react';
+import { X, Mail, Globe, Phone, User, Sparkles, Shield, Building2, Info, PlusCircle, Maximize2 } from 'lucide-react';
 import { getIdentityPlaceholder, HIGH_QUALITY_PLACEHOLDER } from '../constants';
 
 interface ProfileModalProps {
@@ -68,10 +68,15 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
                 src={imgSrc}
                 alt={participant.name}
                 onError={handleImageError}
-                className={`w-full h-full object-contain md:object-cover transition-all duration-1000 ${isShowingPromo ? 'scale-105' : 'scale-100 brightness-90 dark:brightness-100'}`}
+                className={`w-full h-full transition-all duration-700 ${isShowingPromo
+                  ? 'object-contain bg-black/20 dark:bg-stone-200/50 p-2 md:p-4'
+                  : 'object-contain md:object-cover brightness-90 dark:brightness-100'
+                  } ${isShowingPromo ? 'scale-100' : 'scale-100'}`}
               />
-              {/* Desktop Gradient Overlay */}
-              <div className="hidden md:block absolute inset-0 bg-gradient-to-t from-black/80 dark:from-white/40 via-transparent to-transparent" />
+              {/* Desktop Gradient Overlay - Only for profile photo */}
+              {!isShowingPromo && (
+                <div className="hidden md:block absolute inset-0 bg-gradient-to-t from-black/80 dark:from-white/40 via-transparent to-transparent pointer-events-none" />
+              )}
 
               {/* Mobile Profile Photo Controls */}
               {participant.promoPhotoUrl && (
@@ -85,6 +90,21 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
                   >
                     {isShowingPromo ? <User size={16} /> : <Sparkles size={16} />}
                   </button>
+                </div>
+              )}
+
+              {/* Promo Full View Toggle (Desktop/Mobile) */}
+              {isShowingPromo && (
+                <div className="absolute top-4 left-4 z-30">
+                  <a
+                    href={imgSrc}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 bg-black/40 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-black/60 transition-all active:scale-90"
+                    title="Open Full Size"
+                  >
+                    <Maximize2 size={16} />
+                  </a>
                 </div>
               )}
             </div>

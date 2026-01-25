@@ -76,8 +76,12 @@ const App: React.FC = () => {
 
       const correctedData = freshData.map(p => ({
         ...p,
-        photoUrl: p.photoUrl?.includes('uc?id=') ? convertDriveUrl(p.photoUrl) : p.photoUrl,
-        promoPhotoUrl: p.promoPhotoUrl?.includes('uc?id=') ? convertDriveUrl(p.promoPhotoUrl) : p.promoPhotoUrl
+        photoUrl: (p.photoUrl?.includes('drive.google.com') || p.photoUrl?.includes('lh3.googleusercontent.com'))
+          ? convertDriveUrl(p.photoUrl)
+          : p.photoUrl,
+        promoPhotoUrl: (p.promoPhotoUrl?.includes('drive.google.com') || p.promoPhotoUrl?.includes('lh3.googleusercontent.com'))
+          ? convertDriveUrl(p.promoPhotoUrl)
+          : p.promoPhotoUrl
       }));
 
       setParticipants(correctedData);
@@ -105,11 +109,15 @@ const App: React.FC = () => {
       setLoading(true);
       const data = await api.getParticipants();
 
-      // Hotfix: Ensure any existing participants with broken Drive links are corrected on-the-fly
+      // Hotfix: Ensure any existing participants with broken/session-tied Drive links are corrected on-the-fly
       const correctedData = data.map(p => ({
         ...p,
-        photoUrl: p.photoUrl?.includes('uc?id=') ? convertDriveUrl(p.photoUrl) : p.photoUrl,
-        promoPhotoUrl: p.promoPhotoUrl?.includes('uc?id=') ? convertDriveUrl(p.promoPhotoUrl) : p.promoPhotoUrl
+        photoUrl: (p.photoUrl?.includes('drive.google.com') || p.photoUrl?.includes('lh3.googleusercontent.com'))
+          ? convertDriveUrl(p.photoUrl)
+          : p.photoUrl,
+        promoPhotoUrl: (p.promoPhotoUrl?.includes('drive.google.com') || p.promoPhotoUrl?.includes('lh3.googleusercontent.com'))
+          ? convertDriveUrl(p.promoPhotoUrl)
+          : p.promoPhotoUrl
       }));
 
       setParticipants(correctedData);
