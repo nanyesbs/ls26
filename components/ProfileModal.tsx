@@ -50,7 +50,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
       className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 bg-black/90 dark:bg-white/95 backdrop-blur-2xl animate-fade-in overflow-y-auto"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="relative w-full max-w-5xl h-[85vh] md:h-[80vh] max-h-[1000px] bg-black dark:bg-white border border-white/10 dark:border-stone-200 overflow-hidden flex flex-col md:flex-row rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] transition-colors duration-500">
+      <div className="relative w-full max-w-5xl max-h-[95vh] md:max-h-[90vh] bg-black dark:bg-white border border-white/10 dark:border-stone-200 overflow-hidden flex flex-col rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] transition-colors duration-500">
 
         <button
           onClick={onClose}
@@ -59,9 +59,9 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
           <X size={20} className="transition-transform group-hover:rotate-90" />
         </button>
 
-        <div className="flex flex-col md:flex-row w-full h-full min-h-0">
+        <div className="flex flex-col md:flex-row w-full h-full overflow-y-auto md:overflow-hidden">
           {/* Visual Column - Refined 30% */}
-          <div className="w-full md:w-[32%] bg-stone-900/50 dark:bg-stone-50/50 flex flex-col shrink-0 border-b md:border-b-0 md:border-r border-white/5 dark:border-stone-100 p-6 md:p-8 overflow-y-auto custom-scrollbar md:h-full">
+          <div className="w-full md:w-[32%] bg-stone-900/50 dark:bg-stone-50/50 flex flex-col flex-shrink-0 border-b md:border-b-0 md:border-r border-white/5 dark:border-stone-100 p-6 md:p-8 md:overflow-y-auto custom-scrollbar md:h-full">
 
             {/* Profile Frame */}
             <div className="relative w-full aspect-square md:aspect-[4/5] rounded-xl overflow-hidden border border-white/10 dark:border-stone-200 shadow-xl mb-6">
@@ -112,8 +112,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
           </div>
 
           {/* Intelligence Column - 68% */}
-          <div className="w-full md:w-[68%] flex-1 flex flex-col bg-black dark:bg-white overflow-hidden min-h-0 h-full">
-            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-10 md:px-12 md:py-12">
+          <div className="w-full md:w-[68%] flex-1 flex flex-col bg-black dark:bg-white md:overflow-hidden">
+            <div className="flex-1 md:overflow-y-auto custom-scrollbar px-6 py-10 md:px-12 md:py-12">
 
               {/* Header: Identity Core */}
               <div className="mb-10">
