@@ -114,19 +114,19 @@ export const api = {
       fullname: leaderData.name,
       residentcountry: leaderData.country?.name,
       nationality: leaderData.nationality?.name,
-      short_bio: leaderData.shortBio, // corrected
+      shortbio: leaderData.shortBio, // corrected
       profilepicture: leaderData.photoUrl,
       ministryname: leaderData.organization,
       roles: leaderData.title,
       ministrydescription: leaderData.orgDescription,
       promopicture: leaderData.promoPhotoUrl,
       phone: leaderData.phone,
-      contact_email: leaderData.contactEmail, // corrected
+      contactemail: leaderData.contactEmail, // corrected
       website: leaderData.website,
       othercontact: leaderData.otherInfo,
       testimony: leaderData.testimony,
-      upcoming_events: leaderData.upcomingEvents, // corrected
-      dietary_restrictions: leaderData.dietaryRestrictions // corrected
+      upcomingevents: leaderData.upcomingEvents, // corrected
+      dietaryrestrictions: leaderData.dietaryRestrictions // corrected
     };
 
     const { error } = await supabase
