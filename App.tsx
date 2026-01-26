@@ -6,12 +6,12 @@ import ParticipantCard from './components/ParticipantCard';
 import ProfileModal from './components/ProfileModal';
 import AdminConsole from './components/AdminConsole';
 import RegistrationForm from './components/RegistrationForm';
-import { Participant, ViewMode, Country } from './types';
+import { Participant, ViewMode, Country, LayoutMode } from './types';
 import { api } from './services/api';
 import { COUNTRY_LIST, ALPHABET_GROUPS } from './constants';
 import { sortParticipants, normalizeString, convertDriveUrl, findCountry } from './utils';
 import { syncService } from './services/syncService';
-import { Search, ShieldCheck, Users, Loader2, LayoutGrid, Moon, Sun, Globe, Building, Briefcase } from 'lucide-react';
+import { Search, ShieldCheck, Users, Loader2, LayoutGrid, Moon, Sun, Globe, Building, Briefcase, Rows, Columns, Square } from 'lucide-react';
 
 const App: React.FC = () => {
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -19,6 +19,10 @@ const App: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('directory');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>(() => {
+    const saved = localStorage.getItem('ls_layout');
+    return (saved as LayoutMode) || 'grid4';
+  });
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('ls_theme');
     return saved ? saved === 'dark' : false;
@@ -96,6 +100,10 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
+    localStorage.setItem('ls_layout', layoutMode);
+  }, [layoutMode]);
+
+  useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('ls_theme', 'dark');
@@ -133,7 +141,7 @@ const App: React.FC = () => {
         };
       });
 
-      setParticipants(correctedData);
+      setParticipants(sortParticipants(correctedData));
     } catch (err) {
       console.error('Core Offline');
     } finally {
@@ -176,12 +184,12 @@ const App: React.FC = () => {
 
   const handleAdd = async (p: Omit<Participant, 'id'>) => {
     const fresh = await api.addParticipant(p);
-    setParticipants(prev => [...prev, fresh]);
+    setParticipants(prev => sortParticipants([...prev, fresh]));
   };
 
   const handleUpdate = async (id: string, updates: Partial<Participant>) => {
     const updated = await api.updateParticipant(id, updates);
-    setParticipants(prev => prev.map(p => p.id === id ? updated : p));
+    setParticipants(prev => sortParticipants(prev.map(p => p.id === id ? updated : p)));
   };
 
   const handleDelete = async (id: string) => {
@@ -321,10 +329,52 @@ const App: React.FC = () => {
             <p className="text-[10px] text-brand-heaven-gold uppercase font-avenir-medium tracking-widest">Synchronizing Identity Stream...</p>
           </div>
         ) : viewMode === 'directory' ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
-            {filteredParticipants.map(p => (
-              <ParticipantCard key={p.id} participant={p} onClick={() => setSelectedParticipant(p)} />
-            ))}
+          <div className="space-y-16">
+            {/* Layout Toggle Bar */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 py-6 border-b border-white/5 dark:border-black/5 mt-[-2rem]">
+              <div className="text-[10px] md:text-xs font-avenir-bold text-brand-heaven-gold uppercase tracking-[4px]">
+                Filtrar e Ordenar
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setLayoutMode('list')}
+                  className={`p-3 rounded-xl transition-all ${layoutMode === 'list' ? 'bg-brand-heaven-gold text-white shadow-glow' : 'bg-white/5 dark:bg-black/5 text-brand-heaven-gold hover:bg-brand-heaven-gold/10'}`}
+                  title="List View"
+                >
+                  <Square size={20} />
+                </button>
+                <button
+                  onClick={() => setLayoutMode('grid2')}
+                  className={`p-3 rounded-xl transition-all ${layoutMode === 'grid2' ? 'bg-brand-heaven-gold text-white shadow-glow' : 'bg-white/5 dark:bg-black/5 text-brand-heaven-gold hover:bg-brand-heaven-gold/10'}`}
+                  title="2 Column Grid"
+                >
+                  <Columns size={20} />
+                </button>
+                <button
+                  onClick={() => setLayoutMode('grid4')}
+                  className={`p-3 rounded-xl transition-all ${layoutMode === 'grid4' ? 'bg-brand-heaven-gold text-white shadow-glow' : 'bg-white/5 dark:bg-black/5 text-brand-heaven-gold hover:bg-brand-heaven-gold/10'}`}
+                  title="4 Column Grid"
+                >
+                  <LayoutGrid size={20} />
+                </button>
+              </div>
+            </div>
+
+            {/* Results Grid - Dynamic Columns */}
+            <div className={`grid gap-6 md:gap-10 ${layoutMode === 'grid4' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' :
+                layoutMode === 'grid2' ? 'grid-cols-1 sm:grid-cols-2' :
+                  'grid-cols-1'
+              }`}>
+              {filteredParticipants.map(p => (
+                <ParticipantCard
+                  key={p.id}
+                  participant={p}
+                  onClick={() => setSelectedParticipant(p)}
+                  layout={layoutMode === 'list' ? 'list' : 'grid'}
+                />
+              ))}
+            </div>
           </div>
         ) : viewMode === 'admin' ? (
           <AdminConsole

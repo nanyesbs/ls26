@@ -108,17 +108,21 @@ export const normalizeString = (str: string): string => {
     // 1. Cyrillic Transliteration
     result = result.split('').map(char => CYRILLIC_TO_LATIN[char] || char).join('');
 
-    // 2. Specialized replacements
+    // 2. Specific ligatures and special chars
     result = result
         .replace(/ß/g, 'ss')
         .replace(/Ø/g, 'O').replace(/ø/g, 'o')
-        .replace(/Ł/g, 'L').replace(/ł/g, 'l');
+        .replace(/Ł/g, 'L').replace(/ł/g, 'l')
+        .replace(/Æ/g, 'AE').replace(/æ/g, 'ae')
+        .replace(/Œ/g, 'OE').replace(/œ/g, 'oe')
+        .replace(/[\u200B-\u200D\uFEFF]/g, ''); // Remove zero-width spaces
 
     // 3. Decompose and remove diacritics
     return result
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/[^A-Za-z0-9\s-]/g, "")
+        .replace(/\s+/g, ' ')
         .trim()
         .toUpperCase();
 };

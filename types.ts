@@ -31,3 +31,4 @@ export interface Participant {
 }
 
 export type ViewMode = 'directory' | 'admin' | 'registration';
+export type LayoutMode = 'grid4' | 'grid2' | 'list';

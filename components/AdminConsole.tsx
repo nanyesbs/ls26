@@ -9,7 +9,7 @@ import {
   Lock, Edit2, Trash2, X, ShieldCheck,
   Image as ImageIcon, UploadCloud, Camera, History,
   RefreshCw, Loader2, FileSpreadsheet, CheckCircle2,
-  Upload, Sparkles, AlertCircle
+  Upload, Sparkles, AlertCircle, Search
 } from 'lucide-react';
 
 interface AdminConsoleProps {
@@ -43,6 +43,7 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
   const [importReport, setImportReport] = useState<ImportReport | null>(null);
   const [pendingData, setPendingData] = useState<{ p: Omit<Participant, 'id'>, id?: string }[]>([]);
   const [sheetUrl, setSheetUrl] = useState(() => localStorage.getItem('ls_sheet_url') || '');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const importInputRef = useRef<HTMLInputElement>(null);
   const profileFileRef = useRef<HTMLInputElement>(null);
@@ -303,13 +304,31 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
             <h3 className="text-xs font-avenir-bold uppercase text-white dark:text-black flex items-center gap-2">
               <History size={14} className="text-brand-heaven-gold" /> Identity Ledger
             </h3>
-            <div className="flex gap-4">
-              <button onClick={async () => { if (confirm('WARNING: This will delete ALL participants from the Supabase database. Are you sure?')) { await api.resetData(); window.location.reload(); } }} className="text-[10px] font-avenir-bold text-red-500/50 uppercase hover:text-red-500">Factory Reset</button>
-              <button onClick={() => { setIsAdding(true); onSetEditingId(null); setFormData({}); }} className="text-[10px] font-avenir-bold text-brand-heaven-gold uppercase hover:underline">Manual Initialization +</button>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-4">
+                <button onClick={async () => { if (confirm('WARNING: This will delete ALL participants from the Supabase database. Are you sure?')) { await api.resetData(); window.location.reload(); } }} className="text-[10px] font-avenir-bold text-red-500/50 uppercase hover:text-red-500">Factory Reset</button>
+                <button onClick={() => { setIsAdding(true); onSetEditingId(null); setFormData({}); }} className="text-[10px] font-avenir-bold text-brand-heaven-gold uppercase hover:underline">Manual Initialization +</button>
+              </div>
+              <div className="relative">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-heaven-gold/50" />
+                <input
+                  type="text"
+                  placeholder="Filter by name or organization..."
+                  className="w-full bg-black/40 dark:bg-white border border-white/10 dark:border-stone-200 p-3 pl-10 rounded-button text-[11px] text-white dark:text-black outline-none focus:border-brand-heaven-gold"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
           </div>
           <div className="space-y-3 max-h-[660px] overflow-y-auto pr-2 custom-scrollbar">
-            {sortParticipants<Participant>(participants).map(p => (
+            {sortParticipants<Participant>(
+              participants.filter(p =>
+                !searchTerm ||
+                p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                p.organization.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+            ).map(p => (
               <div key={p.id} className="flex items-center justify-between p-4 bg-black/20 dark:bg-white border border-white/5 dark:border-stone-200 rounded-card hover:border-brand-heaven-gold/30">
                 <div className="flex items-center gap-4">
                   <img src={p.photoUrl || getIdentityPlaceholder(p.name)} className="w-10 h-10 rounded-full object-cover border border-brand-heaven-gold/20" />
