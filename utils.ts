@@ -192,18 +192,21 @@ export const processParticipant = (data: any): any => {
 
     const participant = {
         ...data,
-        name: clean(data.name || 'Unnamed Delegate'),
-        organization: clean(data.organization || data.church || ''),
-        title: clean(data.title || data.role || ''),
+        name: clean(data.name || data.fullname || 'Unnamed Delegate'),
+        organization: clean(data.organization || data.ministryname || data.church || ''),
+        title: clean(data.title || data.roles || data.role || ''),
         testimony: clean(data.testimony || data.bio || ''),
-        shortBio: clean(data.shortBio || ''),
-        orgDescription: clean(data.orgDescription || data.description || ''),
+        shortBio: clean(data.shortBio || data.short_bio || ''),
+        orgDescription: clean(data.orgDescription || data.ministrydescription || data.description || ''),
         phone: clean(data.phone || ''),
         email: clean(data.email || '').toLowerCase(),
+        contactEmail: clean(data.contactEmail || data.contact_email || ''),
         website: clean(data.website || ''),
-        otherInfo: clean(data.otherInfo || data.other || ''),
-        photoUrl: convertDriveUrl(data.photoUrl || ''),
-        promoPhotoUrl: convertDriveUrl(data.promoPhotoUrl || ''),
+        otherInfo: clean(data.otherInfo || data.othercontact || data.other || ''),
+        upcomingEvents: clean(data.upcomingEvents || data.upcoming_events || ''),
+        dietaryRestrictions: clean(data.dietaryRestrictions || data.dietary_restrictions || ''),
+        photoUrl: convertDriveUrl(data.photoUrl || data.profilepicture || ''),
+        promoPhotoUrl: convertDriveUrl(data.promoPhotoUrl || data.promopicture || ''),
     };
 
     // Mandatory generated fields for A-Z sorting and filtering

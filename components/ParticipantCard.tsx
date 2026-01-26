@@ -61,26 +61,26 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({ participant, onClick 
 
       <div className="w-full flex flex-col items-center">
         {/* 2. Full Name */}
-        <h3 className="text-[16px] font-avenir-bold text-white dark:text-black mb-2 uppercase tracking-wide group-hover:text-brand-heaven-gold transition-colors">
+        <h3 className="text-base md:text-lg font-avenir-bold text-white dark:text-black mb-2 uppercase tracking-wide group-hover:text-brand-heaven-gold transition-colors">
           {participant.name}
         </h3>
 
         {/* 3. Role */}
-        <p className="text-[11px] font-avenir-medium text-brand-heaven-gold mb-3 uppercase tracking-[2px] opacity-80">
+        <p className="text-xs md:text-sm font-avenir-medium text-brand-heaven-gold mb-3 uppercase tracking-[2px] opacity-80">
           {participant.title}
         </p>
 
         {/* 4. Organization */}
-        <div className="flex items-center justify-center gap-2 text-[12px] text-white/60 dark:text-black/60 font-avenir-roman mb-8 h-8">
-          <Building2 size={12} className="text-brand-heaven-gold shrink-0" />
+        <div className="flex items-center justify-center gap-2 text-sm md:text-base text-white/60 dark:text-black/60 font-avenir-roman mb-8 min-h-[2rem]">
+          <Building2 size={14} className="text-brand-heaven-gold shrink-0" />
           <span className="truncate line-clamp-2 max-w-[200px]">{participant.organization}</span>
         </div>
 
         {/* 5. View More Button */}
         <div className="w-full pt-6 border-t border-white/10 dark:border-stone-100 flex flex-col items-center">
-          <button className="flex items-center gap-2 px-8 py-3 bg-white/5 dark:bg-black/5 group-hover:bg-brand-heaven-gold group-hover:text-white rounded-button text-[10px] font-avenir-bold text-brand-heaven-gold dark:text-black uppercase transition-all tracking-[3px]">
+          <button className="flex items-center gap-2 px-8 py-4 min-h-[44px] bg-white/5 dark:bg-black/5 group-hover:bg-brand-heaven-gold group-hover:text-white rounded-button text-xs md:text-sm font-avenir-bold text-brand-heaven-gold dark:text-black uppercase transition-all tracking-[2px] md:tracking-[3px]">
             View Profile
-            <ChevronRight size={12} className="group-hover:translate-x-1 transition-transform" />
+            <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
       </div>

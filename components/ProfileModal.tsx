@@ -117,7 +117,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
                     setIsShowingPromo(!isShowingPromo);
                     setFallbackStage(0);
                   }}
-                  className="w-full py-3.5 bg-brand-heaven-gold/10 backdrop-blur-xl border border-brand-heaven-gold/30 rounded-button text-brand-heaven-gold text-[10px] font-avenir-bold uppercase flex items-center justify-center gap-3 transition-all hover:bg-brand-heaven-gold hover:text-white group"
+                  className="w-full py-4 min-h-[44px] bg-brand-heaven-gold/10 backdrop-blur-xl border border-brand-heaven-gold/30 rounded-button text-brand-heaven-gold text-xs md:text-sm font-avenir-bold uppercase flex items-center justify-center gap-3 transition-all hover:bg-brand-heaven-gold hover:text-white group"
                 >
                   {isShowingPromo ? <User size={14} /> : <Sparkles size={14} className="group-hover:animate-spin" />}
                   <span>{isShowingPromo ? 'View Identity Profile' : 'View Promotional Asset'}</span>
@@ -134,8 +134,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
               <div className="flex items-center gap-2 md:gap-4">
                 <span className="text-xl md:text-3xl filter drop-shadow-md">{participant.country.flag}</span>
                 <div className="flex flex-col">
-                  <span className="text-[7px] md:text-[9px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[1px] md:tracking-[2px]">Resident</span>
-                  <span className="text-[9px] md:text-[12px] font-avenir-medium text-white dark:text-black uppercase">{participant.country.name}</span>
+                  <span className="text-[10px] md:text-xs font-avenir-bold text-brand-heaven-gold uppercase tracking-[1px] md:tracking-[2px]">Resident</span>
+                  <span className="text-xs md:text-sm font-avenir-medium text-white dark:text-black uppercase">{participant.country.name}</span>
                 </div>
               </div>
 
@@ -143,8 +143,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
                 <div className="flex items-center gap-2 md:gap-4 border-l border-white/10 dark:border-stone-200 pl-3 sm:pl-8">
                   <span className="text-xl md:text-3xl filter drop-shadow-md">{participant.nationality.flag}</span>
                   <div className="flex flex-col">
-                    <span className="text-[7px] md:text-[9px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[1px] md:tracking-[2px]">Heritage</span>
-                    <span className="text-[9px] md:text-[12px] font-avenir-medium text-white dark:text-black uppercase">{participant.nationality.name}</span>
+                    <span className="text-[10px] md:text-xs font-avenir-bold text-brand-heaven-gold uppercase tracking-[1px] md:tracking-[2px]">Heritage</span>
+                    <span className="text-xs md:text-sm font-avenir-medium text-white dark:text-black uppercase">{participant.nationality.name}</span>
                   </div>
                 </div>
               )}
@@ -157,7 +157,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
               <div className="flex flex-wrap items-center gap-1 sm:gap-3">
                 <p className="text-xs sm:text-sm md:text-xl font-didot italic text-brand-heaven-gold">{participant.title}</p>
                 <div className="hidden sm:block w-1 h-1 rounded-full bg-brand-heaven-gold opacity-30" />
-                <p className="text-[8px] md:text-[12px] font-avenir-bold text-white/40 dark:text-stone-400 uppercase tracking-wider">{participant.organization}</p>
+                <p className="text-[10px] md:text-sm font-avenir-bold text-white/40 dark:text-stone-400 uppercase tracking-wider">{participant.organization}</p>
               </div>
             </div>
 
@@ -224,8 +224,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
                     <Shield size={14} /> Admin Secure Access
                   </h4>
                   <div className="flex gap-2">
-                    <button onClick={() => onEdit?.(participant.id)} className="flex-1 sm:flex-none px-6 py-3 bg-brand-heaven-gold text-white rounded-button text-[10px] font-avenir-bold uppercase transition-all hover:brightness-110 shadow-md active:scale-95">Edit Node</button>
-                    <button onClick={() => onDelete?.(participant.id)} className="flex-1 sm:flex-none px-6 py-3 bg-red-500 text-white rounded-button text-[10px] font-avenir-bold uppercase hover:brightness-110 transition-all shadow-md active:scale-95">Delete</button>
+                    <button onClick={() => onEdit?.(participant.id)} className="flex-1 sm:flex-none px-6 py-4 min-h-[44px] bg-brand-heaven-gold text-white rounded-button text-xs md:text-sm font-avenir-bold uppercase transition-all hover:brightness-110 shadow-md active:scale-95">Edit Node</button>
+                    <button onClick={() => onDelete?.(participant.id)} className="flex-1 sm:flex-none px-6 py-4 min-h-[44px] bg-red-500 text-white rounded-button text-xs md:text-sm font-avenir-bold uppercase hover:brightness-110 transition-all shadow-md active:scale-95">Delete</button>
                   </div>
                 </div>
 

@@ -132,7 +132,7 @@ const RegistrationForm: React.FC = () => {
                 <p className="text-white/60 font-avenir-roman max-w-md mx-auto mb-12">Your identity has been synchronized with the Leaders' Summit 2026 database. You are now part of the global network.</p>
                 <button
                     onClick={() => window.location.reload()}
-                    className="px-10 py-4 bg-brand-heaven-gold text-white rounded-button font-avenir-bold uppercase text-xs tracking-widest hover:scale-105 transition-all shadow-glow"
+                    className="px-10 py-4 min-h-[44px] bg-brand-heaven-gold text-white rounded-button font-avenir-bold uppercase text-sm md:text-base tracking-widest hover:scale-105 transition-all shadow-glow"
                 >
                     Return to Directory
                 </button>
@@ -167,11 +167,11 @@ const RegistrationForm: React.FC = () => {
                     {step === 1 && (
                         <div className="animate-slide-up space-y-8">
                             <div className="border-l-2 border-brand-heaven-gold pl-6 space-y-4">
-                                <h2 className="text-[10px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[0.4em] mb-2">Seção 1 de 4</h2>
+                                <h2 className="text-xs md:text-sm font-avenir-bold text-brand-heaven-gold uppercase tracking-[0.3em] md:tracking-[0.4em] mb-2">Seção 1 de 4</h2>
                                 <h3 className="text-xl md:text-2xl font-avenir-bold text-white uppercase tracking-wider mb-2">
                                     ESBS Leaders' Summit '26 - Attending Leaders
                                 </h3>
-                                <div className="text-[11px] text-white/60 font-avenir-roman space-y-4 leading-relaxed max-w-2xl">
+                                <div className="text-xs md:text-sm text-white/60 font-avenir-roman space-y-4 leading-relaxed max-w-2xl">
                                     <p>Dear ESBS Leaders' Summit Attendees,</p>
                                     <p>We are very excited to meet with you in only a few short weeks! To help the networking and collaboration between our attendees, we are creating a brochure featuring all of the attending leaders. Each leader will have their short bio, and promotional materials to their ministries/events. We would also kindly ask you share a key testimony with us, as we would love to select a few leaders to share at the Leaders' Summit.</p>
                                     <p>See you soon!</p>
@@ -180,13 +180,13 @@ const RegistrationForm: React.FC = () => {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-avenir-bold text-brand-heaven-gold uppercase tracking-widest pl-1 flex items-center gap-2">
+                                    <label className="text-xs md:text-sm font-avenir-bold text-brand-heaven-gold uppercase tracking-wide md:tracking-widest pl-1 flex items-center gap-2">
                                         <Mail size={12} /> E-mail *
                                     </label>
                                     <input
                                         type="email" name="email" value={formData.email} onChange={handleChange} required
                                         placeholder="your@email.com"
-                                        className="w-full bg-white/5 border border-white/10 p-4 rounded-button text-sm text-white outline-none focus:border-brand-heaven-gold transition-all"
+                                        className="w-full bg-white/5 border border-white/10 p-4 min-h-[44px] rounded-button text-sm md:text-base text-white outline-none focus:border-brand-heaven-gold transition-all"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -196,17 +196,17 @@ const RegistrationForm: React.FC = () => {
                                         placeholder="Full Name"
                                         className="w-full bg-white/5 border border-white/10 p-4 rounded-button text-sm text-white outline-none focus:border-brand-heaven-gold transition-all"
                                     />
-                                    <p className="text-[8px] text-white/30 uppercase tracking-[0.1em] pl-1">NOTE: This name will appear on your badge.</p>
+                                    <p className="text-[10px] md:text-xs text-white/30 uppercase tracking-[0.05em] md:tracking-[0.1em] pl-1">NOTE: This name will appear on your badge.</p>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-avenir-bold text-brand-heaven-gold uppercase tracking-widest pl-1 flex items-center gap-2">
-                                        <Globe size={12} /> Country *
+                                        <Globe size={12} /> Resident Country
                                     </label>
                                     <select
-                                        name="residentCountry" value={formData.residentCountry} onChange={handleChange} required
+                                        name="residentCountry" value={formData.residentCountry} onChange={handleChange}
                                         className="w-full bg-white/5 border border-white/10 p-4 rounded-button text-sm text-white outline-none focus:border-brand-heaven-gold transition-all appearance-none"
                                     >
-                                        <option value="" className="bg-[#0A0A0A]">Select country</option>
+                                        <option value="" className="bg-[#0A0A0A]">Select country (Optional)</option>
                                         {COUNTRY_LIST.map(c => (
                                             <option key={c.code} value={c.name} className="bg-[#0A0A0A]">{c.flag} {c.name}</option>
                                         ))}
