@@ -112,7 +112,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
 
           {/* Bio Text Content - 60% Split with controlled scrolling */}
           <div className="w-full md:w-[60%] flex flex-col bg-black dark:bg-white overflow-hidden min-h-0">
-            <div className="overflow-y-auto h-full custom-scrollbar px-6 py-10 sm:p-12 md:p-16 lg:p-20">
+            <div className="overflow-y-auto h-full custom-scrollbar px-6 py-10 sm:p-10 md:p-12 lg:p-16">
 
               {/* Flags Section */}
               <div className="mb-12 flex flex-wrap gap-6 items-center">
@@ -135,8 +135,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
                 )}
               </div>
 
-              <div className="mb-6 md:mb-12">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-extrabold text-white dark:text-black leading-[1.1] mb-4 md:mb-8 uppercase tracking-tighter">
+              <div className="mb-6 md:mb-10">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-extrabold text-white dark:text-black leading-[1.1] mb-4 md:mb-6 uppercase tracking-tighter">
                   {participant.name}
                 </h2>
                 <div className="flex flex-wrap items-center gap-2 sm:gap-4">
@@ -148,10 +148,9 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
 
               <div className="w-12 md:w-24 h-[2px] bg-brand-heaven-gold mb-8 md:mb-16" />
 
-              {/* Bio Narrative */}
-              <div className="space-y-8 md:space-y-12 mb-12 md:mb-20">
+              <div className="space-y-6 md:space-y-10 mb-10 md:mb-16">
                 <div className="relative">
-                  <p className="text-base md:text-xl font-avenir-roman leading-relaxed text-white/90 dark:text-black/80 first-letter:text-4xl md:first-letter:text-6xl first-letter:font-didot first-letter:mr-3 md:first-letter:mr-4 first-letter:float-left first-letter:text-brand-heaven-gold">
+                  <p className="text-base md:text-lg font-avenir-roman leading-relaxed text-white/90 dark:text-black/80 first-letter:text-4xl md:first-letter:text-5xl first-letter:font-didot first-letter:mr-3 md:first-letter:mr-4 first-letter:float-left first-letter:text-brand-heaven-gold">
                     {participant.testimony || "No testimony provided."}
                   </p>
                 </div>

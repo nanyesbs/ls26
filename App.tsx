@@ -321,38 +321,7 @@ const App: React.FC = () => {
             <p className="text-[10px] text-brand-heaven-gold uppercase font-avenir-medium tracking-widest">Synchronizing Identity Stream...</p>
           </div>
         ) : viewMode === 'directory' ? (
-          <div className="space-y-16">
-            {/* Layout Toggle Bar */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6 py-6 border-b border-white/5 dark:border-black/5 mt-[-2rem]">
-              <div className="text-[10px] md:text-xs font-avenir-bold text-brand-heaven-gold uppercase tracking-[4px]">
-                Filtrar e Ordenar
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setLayoutMode('list')}
-                  className={`p-3 rounded-xl transition-all ${layoutMode === 'list' ? 'bg-brand-heaven-gold text-white shadow-glow' : 'bg-white/5 dark:bg-black/5 text-brand-heaven-gold hover:bg-brand-heaven-gold/10'}`}
-                  title="List View"
-                >
-                  <Square size={20} />
-                </button>
-                <button
-                  onClick={() => setLayoutMode('grid2')}
-                  className={`p-3 rounded-xl transition-all ${layoutMode === 'grid2' ? 'bg-brand-heaven-gold text-white shadow-glow' : 'bg-white/5 dark:bg-black/5 text-brand-heaven-gold hover:bg-brand-heaven-gold/10'}`}
-                  title="2 Column Grid"
-                >
-                  <Columns size={20} />
-                </button>
-                <button
-                  onClick={() => setLayoutMode('grid4')}
-                  className={`p-3 rounded-xl transition-all ${layoutMode === 'grid4' ? 'bg-brand-heaven-gold text-white shadow-glow' : 'bg-white/5 dark:bg-black/5 text-brand-heaven-gold hover:bg-brand-heaven-gold/10'}`}
-                  title="4 Column Grid"
-                >
-                  <LayoutGrid size={20} />
-                </button>
-              </div>
-            </div>
-
+          <div className="flex flex-col">
             {/* Results Grid - Dynamic Columns */}
             <div className={`grid gap-6 md:gap-10 ${layoutMode === 'grid4' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' :
               layoutMode === 'grid2' ? 'grid-cols-1 sm:grid-cols-2' :
