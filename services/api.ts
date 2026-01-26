@@ -88,5 +88,51 @@ export const api = {
     const settings: Record<string, string> = {};
     data.forEach(s => settings[s.id] = s.value);
     return settings;
+  },
+
+  uploadImage: async (file: File, path: string): Promise<string> => {
+    const { data, error } = await supabase.storage
+      .from('picture')
+      .upload(`${Date.now()}-${path}`, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (error) throw error;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('picture')
+      .getPublicUrl(data.path);
+
+    return publicUrl;
+  },
+
+  saveLeader: async (leaderData: any): Promise<void> => {
+    // Map to lowercase keys to match the 'leaders' table schema created in SQL
+    const payload = {
+      email: leaderData.email,
+      fullname: leaderData.name,
+      residentcountry: leaderData.country?.name,
+      nationality: leaderData.nationality?.name,
+      shortbio: leaderData.shortBio,
+      profilepicture: leaderData.photoUrl,
+      ministryname: leaderData.organization,
+      roles: leaderData.title,
+      ministrydescription: leaderData.orgDescription,
+      promopicture: leaderData.promoPhotoUrl,
+      phone: leaderData.phone,
+      contactemail: leaderData.contactEmail,
+      website: leaderData.website,
+      othercontact: leaderData.otherInfo,
+      testimony: leaderData.testimony,
+      upcomingevents: leaderData.upcomingEvents,
+      dietaryrestrictions: leaderData.dietaryRestrictions
+    };
+
+    const { error } = await supabase
+      .from('leaders')
+      .insert([payload]);
+
+    if (error) throw error;
   }
 };

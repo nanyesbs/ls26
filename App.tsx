@@ -5,10 +5,11 @@ import Navbar from './components/Navbar';
 import ParticipantCard from './components/ParticipantCard';
 import ProfileModal from './components/ProfileModal';
 import AdminConsole from './components/AdminConsole';
+import RegistrationForm from './components/RegistrationForm';
 import { Participant, ViewMode, Country } from './types';
 import { api } from './services/api';
 import { COUNTRY_LIST, ALPHABET_GROUPS } from './constants';
-import { sortParticipants, normalizeString, convertDriveUrl } from './utils';
+import { sortParticipants, normalizeString, convertDriveUrl, findCountry } from './utils';
 import { syncService } from './services/syncService';
 import { Search, ShieldCheck, Users, Loader2, LayoutGrid, Moon, Sun, Globe, Building, Briefcase } from 'lucide-react';
 
@@ -109,16 +110,28 @@ const App: React.FC = () => {
       setLoading(true);
       const data = await api.getParticipants();
 
-      // Hotfix: Ensure any existing participants with broken/session-tied Drive links are corrected on-the-fly
-      const correctedData = data.map(p => ({
-        ...p,
-        photoUrl: (p.photoUrl?.includes('drive.google.com') || p.photoUrl?.includes('lh3.googleusercontent.com'))
-          ? convertDriveUrl(p.photoUrl)
-          : p.photoUrl,
-        promoPhotoUrl: (p.promoPhotoUrl?.includes('drive.google.com') || p.promoPhotoUrl?.includes('lh3.googleusercontent.com'))
-          ? convertDriveUrl(p.promoPhotoUrl)
-          : p.promoPhotoUrl
-      }));
+      // Hotfix: Ensure any existing participants with broken/session-tied Drive links or incorrect country mappings are corrected on-the-fly
+      const correctedData = data.map(p => {
+        let country = p.country;
+
+        // Re-find country for everyone using their stored 'country.name' or 'nationality.name'
+        // This fixes the "Latvia as Germany" issue from previous versions
+        if (p.country) {
+          const fresh = findCountry(p.country.name);
+          if (fresh.code !== '??') country = fresh;
+        }
+
+        return {
+          ...p,
+          country: country,
+          photoUrl: (p.photoUrl?.includes('drive.google.com') || p.photoUrl?.includes('lh3.googleusercontent.com'))
+            ? convertDriveUrl(p.photoUrl)
+            : p.photoUrl,
+          promoPhotoUrl: (p.promoPhotoUrl?.includes('drive.google.com') || p.promoPhotoUrl?.includes('lh3.googleusercontent.com'))
+            ? convertDriveUrl(p.promoPhotoUrl)
+            : p.promoPhotoUrl
+        };
+      });
 
       setParticipants(correctedData);
     } catch (err) {
@@ -129,8 +142,14 @@ const App: React.FC = () => {
   };
 
   const activeCountries = useMemo(() => {
-    const codesInUse = new Set(participants.map(p => p.country.code));
-    return COUNTRY_LIST.filter(c => codesInUse.has(c.code));
+    const countries = new Map<string, Country>();
+    participants.forEach(p => {
+      // If valid country info exists, add it to unique filter set
+      if (p.country && p.country.code !== '??') {
+        countries.set(p.country.code, p.country);
+      }
+    });
+    return Array.from(countries.values()).sort((a, b) => a.name.localeCompare(b.name));
   }, [participants]);
 
   const uniqueMinistries = useMemo(() => Array.from(new Set(participants.map(p => p.organization))).sort(), [participants]);
@@ -179,6 +198,16 @@ const App: React.FC = () => {
   const sortedAlphabet = useMemo(() => {
     return ALPHABET_GROUPS.LATIN.filter(char => availableLetters.has(char));
   }, [availableLetters]);
+
+  const availableCountries = useMemo(() => {
+    const countries = new Map<string, Country>();
+    participants.forEach(p => {
+      if (p.country && p.country.code !== '??') {
+        countries.set(p.country.code, p.country);
+      }
+    });
+    return Array.from(countries.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [participants]);
 
   return (
     <div className="min-h-screen transition-colors duration-500 bg-black dark:bg-white pt-16">
@@ -297,7 +326,7 @@ const App: React.FC = () => {
               <ParticipantCard key={p.id} participant={p} onClick={() => setSelectedParticipant(p)} />
             ))}
           </div>
-        ) : (
+        ) : viewMode === 'admin' ? (
           <AdminConsole
             participants={participants}
             onAdd={handleAdd}
@@ -308,6 +337,8 @@ const App: React.FC = () => {
             editingId={activeEditingId}
             onSetEditingId={setActiveEditingId}
           />
+        ) : (
+          <RegistrationForm />
         )}
       </main>
 

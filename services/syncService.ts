@@ -92,11 +92,17 @@ export const syncService = {
         const ws = wb.Sheets[wb.SheetNames[0]];
         const data = XLSX.utils.sheet_to_json(ws) as any[];
 
-        const participants: Omit<Participant, 'id'>[] = [];
+        // Fetch existing to preserve IDs if possible, though email unique constraint handles the heavy lifting
+        const existing = await api.getParticipants();
+        const emailToId = new Map(existing.map(p => [p.email?.toLowerCase().trim(), p.id]));
+
+        const participants: any[] = [];
 
         for (const row of data) {
             const email = (row['Email Address'] || row['Email'] || row['Email address'] || '').toString().toLowerCase().trim();
             if (!email) continue;
+
+            const existingId = emailToId.get(email);
 
             const rawData = {
                 name: row['Full Name'] || row['Name'],
@@ -114,9 +120,16 @@ export const syncService = {
                 otherInfo: row['Other'] || row['Other Information'],
             };
 
-            participants.push(processParticipant(rawData));
+            const processed = processParticipant(rawData);
+            // Ensure ID is present for upsert
+            participants.push({
+                ...processed,
+                id: existingId || Math.random().toString(36).substring(2, 7).toUpperCase()
+            });
         }
 
-        await api.bulkUpsertParticipants(participants);
+        if (participants.length > 0) {
+            await api.bulkUpsertParticipants(participants);
+        }
     }
 };

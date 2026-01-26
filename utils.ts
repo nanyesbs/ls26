@@ -63,22 +63,25 @@ const CYRILLIC_TO_LATIN: Record<string, string> = {
 export const convertDriveUrl = (url: string): string => {
     if (!url) return '';
 
-    // If it's already a direct data URL or non-drive URL, keep it
-    if (url.startsWith('data:') || !url.includes('drive.google.com')) return url;
+    // If it's already a direct data URL, keep it
+    if (url.startsWith('data:')) return url;
+
+    // If it doesn't look like a Google link, keep it
+    if (!url.includes('drive.google.com') && !url.includes('googleusercontent.com')) return url;
 
     try {
         let fileId = '';
         if (url.includes('id=')) {
             fileId = url.split('id=')[1].split('&')[0];
         } else if (url.includes('/d/')) {
-            fileId = url.split('/d/')[1].split('/')[0];
+            fileId = url.split('/d/')[1].split('=')[0].split('/')[0]; // Handle /d/ID=s... cases
         } else if (url.includes('/folders/')) {
-            // If it's a folder link, we can't show it as an image directly
             return url;
         }
 
-        // Use the lh3.googleusercontent.com CDN format which is the most reliable for public embedding
-        return fileId ? `https://lh3.googleusercontent.com/d/${fileId}` : url;
+        // Use the lh3.googleusercontent.com CDN format with a size parameter
+        // This is the most reliable way to embed Google Drive images publicly
+        return fileId ? `https://lh3.googleusercontent.com/d/${fileId}=s1000` : url;
     } catch (e) {
         return url;
     }
@@ -137,7 +140,7 @@ export const getFlagEmoji = (countryCode: string): string => {
  * Preserves the original emoji if present in the input.
  */
 export const findCountry = (nameOrCode: string): Country => {
-    if (!nameOrCode) return COUNTRY_LIST[0];
+    if (!nameOrCode) return { name: 'Global', flag: '🌍', code: '??' };
 
     const originalText = nameOrCode.toString().trim();
     const emojiMatch = originalText.match(/[\u{1F1E6}-\u{1F1FF}]{2}/u);
@@ -163,13 +166,18 @@ export const findCountry = (nameOrCode: string): Country => {
     // 2. Fallback: Try to use the original emoji if it looks like a flag
     if (originalEmoji) {
         return {
-            name: input.charAt(0).toUpperCase() + input.slice(1),
+            name: input.charAt(0).toUpperCase() + input.slice(1) || 'Global',
             flag: originalEmoji,
             code: '??'
         };
     }
 
-    return COUNTRY_LIST[0];
+    // 3. Last fallback: Return a generic "Global" country instead of a specific one like Germany
+    return {
+        name: input ? (input.charAt(0).toUpperCase() + input.slice(1)) : 'Global',
+        flag: '🌍',
+        code: '??'
+    };
 };
 
 /**
@@ -188,6 +196,7 @@ export const processParticipant = (data: any): any => {
         organization: clean(data.organization || data.church || ''),
         title: clean(data.title || data.role || ''),
         testimony: clean(data.testimony || data.bio || ''),
+        shortBio: clean(data.shortBio || ''),
         orgDescription: clean(data.orgDescription || data.description || ''),
         phone: clean(data.phone || ''),
         email: clean(data.email || '').toLowerCase(),

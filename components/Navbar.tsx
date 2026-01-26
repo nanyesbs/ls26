@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutGrid, ShieldCheck, Moon, Sun } from 'lucide-react';
+import { LayoutGrid, ShieldCheck, Moon, Sun, PlusCircle } from 'lucide-react';
 import { ViewMode } from '../types';
 
 interface NavbarProps {
@@ -46,6 +46,12 @@ const Navbar: React.FC<NavbarProps> = ({
                             className={`text-[10px] font-avenir-bold uppercase flex items-center gap-2 transition-all ${viewMode === 'admin' ? 'text-brand-heaven-gold' : 'text-white/40 dark:text-black/40 hover:text-white dark:hover:text-black'}`}
                         >
                             <ShieldCheck size={14} /> Admin {isAdminAuthorized && <span className="w-1 h-1 rounded-full bg-green-500" />}
+                        </button>
+                        <button
+                            onClick={() => setViewMode('registration')}
+                            className={`text-[10px] font-avenir-bold uppercase flex items-center gap-2 px-4 py-1.5 rounded-button border transition-all ${viewMode === 'registration' ? 'bg-brand-heaven-gold border-brand-heaven-gold text-white shadow-glow-sm' : 'border-white/10 dark:border-black/10 text-brand-heaven-gold hover:bg-brand-heaven-gold/10'}`}
+                        >
+                            <PlusCircle size={14} /> New Bio
                         </button>
                     </div>
 
