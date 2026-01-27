@@ -76,7 +76,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
             <div className="absolute bottom-6 left-6 right-6 flex items-end gap-5">
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-tr from-brand-heaven-gold to-white/20 rounded-2xl blur opacity-20 group-hover:opacity-40 transition" />
-                <div className="relative w-28 h-28 rounded-2xl overflow-hidden border-2 border-brand-heaven-gold/30 shadow-2xl">
+                <div className="relative w-32 h-32 rounded-2xl overflow-hidden border-2 border-brand-heaven-gold/30 shadow-2xl">
                   <img
                     src={participant.photoUrl || getIdentityPlaceholder(participant.name)}
                     className="w-full h-full object-cover"
