@@ -47,10 +47,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 bg-black/90 dark:bg-white/95 backdrop-blur-2xl animate-fade-in overflow-y-auto"
+      className="fixed inset-0 z-[100] flex items-start md:items-center justify-center p-4 md:p-10 bg-black/90 dark:bg-white/95 backdrop-blur-2xl animate-fade-in overflow-y-auto"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="relative w-full max-w-5xl md:max-h-[90vh] bg-[#0a0a0a] dark:bg-white border border-white/10 dark:border-stone-200 md:overflow-hidden flex flex-col rounded-[2.5rem] shadow-[0_0_80px_rgba(0,0,0,0.8)] transition-colors duration-500 overflow-hidden">
+      <div className="relative w-full max-w-5xl md:max-h-[90vh] bg-[#0a0a0a] dark:bg-white border border-white/10 dark:border-stone-200 md:overflow-hidden flex flex-col rounded-3xl md:rounded-[2.5rem] shadow-[0_0_80px_rgba(0,0,0,0.8)] transition-colors duration-500 overflow-hidden">
 
         <button
           onClick={onClose}
@@ -61,7 +61,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
 
         <div className="flex flex-col md:flex-row w-full md:h-full md:overflow-hidden">
           {/* Mobile Profile Header (Creative Approach) */}
-          <div className="md:hidden relative w-full h-[300px] flex-shrink-0">
+          <div className="md:hidden relative w-full aspect-[4/3] min-h-[250px] flex-shrink-0">
             {/* Banner Background */}
             <div className="absolute inset-0 overflow-hidden">
               <img
@@ -90,7 +90,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
                     {participant.country.flag} {participant.country.name} Node
                   </p>
                 </div>
-                <h2 className="text-2xl font-extrabold text-white uppercase tracking-tighter leading-tight drop-shadow-lg">
+                <h2 className="text-xl md:text-2xl font-extrabold text-white uppercase tracking-tighter leading-tight drop-shadow-lg">
                   {participant.name}
                 </h2>
               </div>
@@ -155,7 +155,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
 
           {/* Info Column (Right Area) - Expanded & Refined */}
           <div className="w-full md:w-[65%] flex-1 flex flex-col bg-[#0a0a0a] dark:bg-white md:overflow-hidden relative">
-            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-10 md:px-16 md:py-16 space-y-16">
+            <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-8 md:px-16 md:py-16 space-y-12 md:space-y-16">
 
               {/* Header Info (Desktop Only) */}
               <div className="hidden md:block">
@@ -214,11 +214,11 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
                     <div className="w-10 h-10 rounded-xl bg-brand-heaven-gold/5 flex items-center justify-center border border-brand-heaven-gold/20">
                       <Sparkles size={20} className="text-brand-heaven-gold" />
                     </div>
-                    <h4 className="text-[11px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[5px]">Core Intelligence</h4>
+                    <h4 className="text-[11px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[5px]">Short Bio</h4>
                   </div>
                   <div className="relative">
                     <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-gradient-to-b from-brand-heaven-gold/40 via-transparent to-transparent" />
-                    <p className="text-[15px] md:text-[17px] font-avenir-roman leading-relaxed text-white/80 dark:text-stone-600 first-letter:text-5xl first-letter:font-didot first-letter:mr-3 first-letter:float-left first-letter:text-brand-heaven-gold first-letter:leading-[0.8]">
+                    <p className="text-[15px] md:text-[17px] font-avenir-roman leading-relaxed text-white/80 dark:text-stone-600 first-letter:text-5xl first-letter:font-didot first-letter:mr-3 first-letter:float-left first-letter:text-brand-heaven-gold first-letter:leading-[0.7] first-letter:pt-1">
                       {participant.testimony}
                     </p>
                   </div>
@@ -238,25 +238,25 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
                 )}
 
                 {/* Comms Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/5 dark:bg-stone-100 border border-white/10 dark:border-stone-100 rounded-[2rem] overflow-hidden shadow-2xl">
-                  <div className="bg-[#0f0f0f] dark:bg-white p-8 flex flex-col gap-3 group transition-colors hover:bg-white/5 dark:hover:bg-stone-50">
-                    <span className="text-[8px] font-avenir-bold text-brand-heaven-gold/60 uppercase tracking-widest flex items-center gap-2"><Phone size={10} /> Secure Wire</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/5 dark:bg-stone-100 border border-white/10 dark:border-stone-100 rounded-3xl md:rounded-[2rem] overflow-hidden shadow-2xl">
+                  <div className="bg-[#0f0f0f] dark:bg-white p-5 md:p-8 flex flex-col gap-3 group transition-colors hover:bg-white/5 dark:hover:bg-stone-50">
+                    <span className="text-[8px] font-avenir-bold text-brand-heaven-gold/60 uppercase tracking-widest flex items-center gap-2"><Phone size={10} /> Phone Number</span>
                     <a href={`tel:${participant.phone}`} className="text-sm font-avenir-medium text-white dark:text-black group-hover:text-brand-heaven-gold transition-colors">{participant.phone || 'Communication Pend.'}</a>
                   </div>
-                  <div className="bg-[#0f0f0f] dark:bg-white p-8 flex flex-col gap-3 group transition-colors hover:bg-white/5 dark:hover:bg-stone-50">
-                    <span className="text-[8px] font-avenir-bold text-brand-heaven-gold/60 uppercase tracking-widest flex items-center gap-2"><Mail size={10} /> Direct Packet</span>
+                  <div className="bg-[#0f0f0f] dark:bg-white p-5 md:p-8 flex flex-col gap-3 group transition-colors hover:bg-white/5 dark:hover:bg-stone-50">
+                    <span className="text-[8px] font-avenir-bold text-brand-heaven-gold/60 uppercase tracking-widest flex items-center gap-2"><Mail size={10} /> Email Address</span>
                     <a href={`mailto:${participant.email}`} className="text-sm font-avenir-medium text-white dark:text-black group-hover:text-brand-heaven-gold transition-colors truncate">{participant.email}</a>
                   </div>
-                  <div className="bg-[#0f0f0f] dark:bg-white p-8 flex flex-col gap-3 group transition-colors hover:bg-white/5 dark:hover:bg-stone-50">
-                    <span className="text-[8px] font-avenir-bold text-brand-heaven-gold/60 uppercase tracking-widest flex items-center gap-2"><Globe size={10} /> Digital Nexus</span>
+                  <div className="bg-[#0f0f0f] dark:bg-white p-5 md:p-8 flex flex-col gap-3 group transition-colors hover:bg-white/5 dark:hover:bg-stone-50">
+                    <span className="text-[8px] font-avenir-bold text-brand-heaven-gold/60 uppercase tracking-widest flex items-center gap-2"><Globe size={10} /> Website</span>
                     {participant.website ? (
                       <a href={participant.website.startsWith('http') ? participant.website : `https://${participant.website}`} target="_blank" rel="noopener noreferrer" className="text-sm font-avenir-medium text-white dark:text-black group-hover:text-brand-heaven-gold transition-colors">
                         {participant.website.replace(/^https?:\/\//, '')}
                       </a>
                     ) : <span className="text-xs italic opacity-20">Offline</span>}
                   </div>
-                  <div className="bg-[#0f0f0f] dark:bg-white p-8 flex flex-col gap-3 group transition-colors hover:bg-white/5 dark:hover:bg-stone-50">
-                    <span className="text-[8px] font-avenir-bold text-brand-heaven-gold/60 uppercase tracking-widest flex items-center gap-2"><Info size={10} /> Access Key</span>
+                  <div className="bg-[#0f0f0f] dark:bg-white p-5 md:p-8 flex flex-col gap-3 group transition-colors hover:bg-white/5 dark:hover:bg-stone-50">
+                    <span className="text-[8px] font-avenir-bold text-brand-heaven-gold/60 uppercase tracking-widest flex items-center gap-2"><Info size={10} /> Other</span>
                     <p className="text-sm font-avenir-medium text-white dark:text-black">{participant.otherInfo || 'Standard Node'}</p>
                   </div>
                 </div>
@@ -269,7 +269,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
                       <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10">
                         <Building2 size={20} className="text-brand-heaven-gold" />
                       </div>
-                      <h4 className="text-[11px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[5px]">Organizational Matrix</h4>
+                      <h4 className="text-[11px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[5px]">organization description</h4>
                     </div>
                     <p className="text-[14px] md:text-[16px] font-avenir-roman leading-relaxed text-white/90 dark:text-black/80 p-8 bg-white/[0.02] dark:bg-stone-50 rounded-3xl border border-white/5">
                       {participant.orgDescription}
