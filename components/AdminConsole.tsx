@@ -9,7 +9,8 @@ import {
   Lock, Edit2, Trash2, X, ShieldCheck,
   Image as ImageIcon, UploadCloud, Camera, History,
   RefreshCw, Loader2, FileSpreadsheet, CheckCircle2,
-  Upload, Sparkles, AlertCircle, Search
+  Upload, Sparkles, AlertCircle, Search, Calendar,
+  Filter, ChevronDown, ChevronUp, Users
 } from 'lucide-react';
 
 interface AdminConsoleProps {
@@ -44,6 +45,35 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
   const [pendingData, setPendingData] = useState<{ p: Omit<Participant, 'id'>, id?: string }[]>([]);
   const [sheetUrl, setSheetUrl] = useState(() => localStorage.getItem('ls_sheet_url') || '');
   const [searchTerm, setSearchTerm] = useState('');
+  const [dateFilterStart, setDateFilterStart] = useState('');
+  const [dateFilterEnd, setDateFilterEnd] = useState('');
+  const [showDateFilter, setShowDateFilter] = useState(false);
+  const [showFilteredParticipants, setShowFilteredParticipants] = useState(false);
+
+  const filteredByDate = participants.filter(p => {
+    if (!dateFilterStart && !dateFilterEnd) return true;
+    if (!p.createdAt) return false;
+
+    // Create dates in local time for comparison
+    const pDate = new Date(p.createdAt);
+    const pTime = pDate.getTime();
+
+    let start = -Infinity;
+    if (dateFilterStart) {
+      const startDate = new Date(dateFilterStart);
+      startDate.setHours(0, 0, 0, 0);
+      start = startDate.getTime();
+    }
+
+    let end = Infinity;
+    if (dateFilterEnd) {
+      const endDate = new Date(dateFilterEnd);
+      endDate.setHours(23, 59, 59, 999);
+      end = endDate.getTime();
+    }
+
+    return pTime >= start && pTime <= end;
+  });
 
   const importInputRef = useRef<HTMLInputElement>(null);
   const profileFileRef = useRef<HTMLInputElement>(null);
@@ -252,22 +282,99 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
       {/* Dashboard Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Total Registrations Card */}
-        <div className="bg-gradient-to-br from-brand-heaven-gold/20 to-brand-heaven-gold/5 border border-brand-heaven-gold/30 p-8 rounded-card relative overflow-hidden">
+        <div className="bg-gradient-to-br from-brand-heaven-gold/20 to-brand-heaven-gold/5 border border-brand-heaven-gold/30 p-8 rounded-card relative overflow-hidden flex flex-col justify-between">
           <div className="absolute top-0 right-0 w-32 h-32 bg-brand-heaven-gold/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
           <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-brand-heaven-gold/20 rounded-full flex items-center justify-center">
-                <ShieldCheck size={24} className="text-brand-heaven-gold" />
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-brand-heaven-gold/20 rounded-full flex items-center justify-center">
+                  <ShieldCheck size={24} className="text-brand-heaven-gold" />
+                </div>
+                <div>
+                  <p className="text-[9px] font-avenir-bold text-brand-heaven-gold/60 uppercase tracking-[3px]">Total Registrations</p>
+                </div>
               </div>
-              <div>
-                <p className="text-[9px] font-avenir-bold text-brand-heaven-gold/60 uppercase tracking-[3px]">Total Registrations</p>
-              </div>
+              <button
+                onClick={() => setShowDateFilter(!showDateFilter)}
+                className={`p-2 rounded-full transition-all ${showDateFilter ? 'bg-brand-heaven-gold text-white' : 'bg-white/5 text-brand-heaven-gold hover:bg-white/10'}`}
+                title="Filter by date"
+              >
+                <Filter size={16} />
+              </button>
             </div>
+
             <div className="flex items-baseline gap-2">
-              <span className="text-5xl font-avenir-bold text-brand-heaven-gold">{participants.length}</span>
-              <span className="text-sm text-white/40 dark:text-black/40 font-avenir-roman">participants</span>
+              <span className="text-5xl font-avenir-bold text-brand-heaven-gold">
+                {showDateFilter && (dateFilterStart || dateFilterEnd) ? filteredByDate.length : participants.length}
+              </span>
+              <span className="text-sm text-white/40 dark:text-black/40 font-avenir-roman uppercase tracking-wider">
+                {showDateFilter && (dateFilterStart || dateFilterEnd) ? 'filtered results' : 'participants'}
+              </span>
             </div>
+
+            {showDateFilter && (
+              <div className="mt-6 p-4 bg-black/40 dark:bg-white/50 border border-brand-heaven-gold/20 rounded-xl space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[8px] font-avenir-bold text-brand-heaven-gold/60 uppercase">Start Date</label>
+                    <input
+                      type="date"
+                      className="w-full bg-black/20 dark:bg-stone-50 border border-white/10 dark:border-stone-200 p-2 rounded text-[10px] text-white dark:text-black outline-none focus:border-brand-heaven-gold"
+                      value={dateFilterStart}
+                      onChange={(e) => setDateFilterStart(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[8px] font-avenir-bold text-brand-heaven-gold/60 uppercase">End Date</label>
+                    <input
+                      type="date"
+                      className="w-full bg-black/20 dark:bg-stone-50 border border-white/10 dark:border-stone-200 p-2 rounded text-[10px] text-white dark:text-black outline-none focus:border-brand-heaven-gold"
+                      value={dateFilterEnd}
+                      onChange={(e) => setDateFilterEnd(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {(dateFilterStart || dateFilterEnd) && (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => { setDateFilterStart(''); setDateFilterEnd(''); }}
+                      className="flex-1 py-2 bg-white/5 hover:bg-white/10 text-[9px] font-avenir-bold uppercase rounded text-white/40 hover:text-white/60 transition-all border border-white/5"
+                    >
+                      Clear Dates
+                    </button>
+                    <button
+                      onClick={() => setShowFilteredParticipants(!showFilteredParticipants)}
+                      className="flex-[2] py-2 bg-brand-heaven-gold/20 hover:bg-brand-heaven-gold/30 text-brand-heaven-gold text-[9px] font-avenir-bold uppercase rounded border border-brand-heaven-gold/30 transition-all flex items-center justify-center gap-2"
+                    >
+                      {showFilteredParticipants ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                      {showFilteredParticipants ? 'Hide List' : `View ${filteredByDate.length} People`}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
+
+          {showFilteredParticipants && (dateFilterStart || dateFilterEnd) && (
+            <div className="mt-4 max-h-[200px] overflow-y-auto custom-scrollbar pr-2 space-y-2 animate-in fade-in slide-in-from-top-1">
+              {filteredByDate.length === 0 ? (
+                <div className="text-center py-4">
+                  <p className="text-[10px] text-white/30 italic">No matches found for this range</p>
+                </div>
+              ) : (
+                filteredByDate.map(p => (
+                  <div key={p.id} className="flex items-center gap-3 p-2 bg-black/20 dark:bg-white/30 border border-white/5 rounded-lg">
+                    <img src={p.photoUrl || getIdentityPlaceholder(p.name)} className="w-6 h-6 rounded-full object-cover" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-avenir-bold text-white dark:text-black truncate uppercase">{p.name}</p>
+                      <p className="text-[8px] text-white/40 dark:text-stone-500 uppercase">{new Date(p.createdAt!).toLocaleDateString('pt-BR')}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
 
         {/* Daily Registrations Card */}
@@ -400,7 +507,7 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
           </div>
           <div className="space-y-3 max-h-[660px] overflow-y-auto pr-2 custom-scrollbar">
             {sortParticipants<Participant>(
-              participants.filter(p =>
+              filteredByDate.filter(p =>
                 !searchTerm ||
                 p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 p.organization.toLowerCase().includes(searchTerm.toLowerCase())

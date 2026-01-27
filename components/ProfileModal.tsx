@@ -50,176 +50,244 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ participant, onClose, isAdm
       className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 bg-black/90 dark:bg-white/95 backdrop-blur-2xl animate-fade-in overflow-y-auto"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="relative w-full max-w-5xl md:max-h-[90vh] bg-black dark:bg-white border border-white/10 dark:border-stone-200 md:overflow-hidden flex flex-col rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] transition-colors duration-500">
+      <div className="relative w-full max-w-5xl md:max-h-[90vh] bg-[#0a0a0a] dark:bg-white border border-white/10 dark:border-stone-200 md:overflow-hidden flex flex-col rounded-[2.5rem] shadow-[0_0_80px_rgba(0,0,0,0.8)] transition-colors duration-500 overflow-hidden">
 
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 md:top-6 md:right-6 z-[110] w-10 h-10 flex items-center justify-center bg-black/20 dark:bg-black/5 backdrop-blur-xl rounded-full text-white/80 dark:text-stone-500 hover:text-brand-heaven-gold transition-all active:scale-95 group"
+          className="absolute top-4 right-4 md:top-6 md:right-6 z-[120] w-12 h-12 flex items-center justify-center bg-black/40 backdrop-blur-2xl rounded-full text-white/80 hover:text-brand-heaven-gold hover:scale-110 hover:rotate-90 transition-all active:scale-95 group border border-white/10"
         >
-          <X size={20} className="transition-transform group-hover:rotate-90" />
+          <X size={24} />
         </button>
 
         <div className="flex flex-col md:flex-row w-full md:h-full md:overflow-hidden">
-          {/* Visual Column - Refined 30% */}
-          <div className="w-full md:w-[32%] bg-stone-900/50 dark:bg-stone-50/50 flex flex-col flex-shrink-0 border-b md:border-b-0 md:border-r border-white/5 dark:border-stone-100 p-4 md:p-8 md:overflow-y-auto custom-scrollbar md:h-full">
+          {/* Mobile Profile Header (Creative Approach) */}
+          <div className="md:hidden relative w-full h-[300px] flex-shrink-0">
+            {/* Banner Background */}
+            <div className="absolute inset-0 overflow-hidden">
+              <img
+                src={participant.promoPhotoUrl || participant.photoUrl || getIdentityPlaceholder(participant.name)}
+                className="w-full h-full object-cover blur-sm brightness-50 scale-110"
+                alt="Banner"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-black/20" />
+            </div>
 
+            {/* Profile Info Overlap */}
+            <div className="absolute bottom-6 left-6 right-6 flex items-end gap-5">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-tr from-brand-heaven-gold to-white/20 rounded-2xl blur opacity-20 group-hover:opacity-40 transition" />
+                <div className="relative w-28 h-28 rounded-2xl overflow-hidden border-2 border-brand-heaven-gold/30 shadow-2xl">
+                  <img
+                    src={participant.photoUrl || getIdentityPlaceholder(participant.name)}
+                    className="w-full h-full object-cover"
+                    alt={participant.name}
+                  />
+                </div>
+              </div>
+              <div className="flex-1 pb-2">
+                <div className="px-2 py-1 bg-brand-heaven-gold/20 backdrop-blur-md rounded-lg border border-brand-heaven-gold/30 w-fit mb-2">
+                  <p className="text-[10px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[2px] flex items-center gap-1">
+                    {participant.country.flag} {participant.country.name} Node
+                  </p>
+                </div>
+                <h2 className="text-2xl font-extrabold text-white uppercase tracking-tighter leading-tight drop-shadow-lg">
+                  {participant.name}
+                </h2>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop Visual Column (Left Area) */}
+          <div className="hidden md:flex w-full md:w-[35%] bg-stone-900/50 dark:bg-stone-50/50 flex flex-col flex-shrink-0 border-r border-white/5 dark:border-stone-100 p-8 md:overflow-y-auto custom-scrollbar h-full">
             {/* Profile Frame */}
-            <div className="relative w-full aspect-[4/3] md:aspect-[4/5] rounded-xl overflow-hidden border border-white/10 dark:border-stone-200 shadow-xl mb-4 md:mb-6">
+            <div className="relative w-full aspect-[4/5] rounded-[2rem] overflow-hidden border border-white/10 dark:border-stone-200 shadow-2xl mb-8 group">
               <img
                 src={participant.photoUrl || getIdentityPlaceholder(participant.name)}
                 alt={participant.name}
                 onError={handleImageError}
-                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+                className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
+
+              <div className="absolute bottom-6 left-6 right-6">
+                <p className="text-[10px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[4px] mb-2">{participant.country.name} Host Node</p>
+                <div className="w-12 h-[1px] bg-brand-heaven-gold" />
+              </div>
             </div>
 
-            {/* Promo Frame (Optional) */}
+            {/* Promo Frame */}
             {participant.promoPhotoUrl && (
-              <div className="space-y-3 group/promo">
+              <div className="space-y-4 group/promo">
                 <div className="flex justify-between items-center">
-                  <span className="text-[9px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[3px] opacity-60">Promotional Intelligence</span>
-                  <a
-                    href={participant.promoPhotoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[8px] font-avenir-bold text-brand-heaven-gold/40 hover:text-brand-heaven-gold uppercase tracking-widest flex items-center gap-1 transition-all"
-                  >
-                    <Maximize2 size={10} /> Ampliar
-                  </a>
+                  <span className="text-[9px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[3px] opacity-60 flex items-center gap-2">
+                    <Sparkles size={12} /> Visual Intelligence
+                  </span>
                 </div>
                 <div
-                  className="relative w-full aspect-[16/9] max-h-[120px] md:max-h-none md:aspect-video rounded-xl overflow-hidden border border-white/5 dark:border-stone-200/50 shadow-lg bg-black/20 cursor-zoom-in"
+                  className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/5 dark:border-stone-200 shadow-lg bg-black/40 cursor-zoom-in group-hover/promo:border-brand-heaven-gold/30 transition-all"
                   onClick={() => window.open(participant.promoPhotoUrl, '_blank')}
                 >
                   <img
                     src={participant.promoPhotoUrl}
                     alt="Promotion"
-                    className="w-full h-full object-cover opacity-80 group-hover/promo:opacity-100 transition-opacity"
+                    className="w-full h-full object-cover opacity-60 group-hover/promo:opacity-100 group-hover/promo:scale-110 transition-all duration-700"
                   />
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/promo:opacity-100 transition-opacity bg-black/20 backdrop-blur-[2px]">
-                    <Maximize2 size={24} className="text-white/50" />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/promo:opacity-100 transition-opacity bg-black/40 backdrop-blur-[4px]">
+                    <div className="flex flex-col items-center gap-2">
+                      <Maximize2 size={32} className="text-white/70" />
+                      <span className="text-[10px] font-avenir-bold text-white uppercase tracking-widest">Expand Vision</span>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Verification Status */}
-            <div className="mt-4 md:mt-auto pt-4 md:pt-8 flex items-center justify-center gap-3 opacity-40">
-              <Shield size={12} className="text-brand-heaven-gold" />
-              <span className="text-[8px] font-avenir-bold text-white dark:text-black uppercase tracking-[2px]">Encrypted Stuttgart Node</span>
+            <div className="mt-auto pt-10 flex flex-col items-center gap-4 opacity-50">
+              <div className="flex items-center gap-4">
+                <div className="w-8 h-8 rounded-full border border-brand-heaven-gold/40 flex items-center justify-center">
+                  <Shield size={14} className="text-brand-heaven-gold" />
+                </div>
+                <span className="text-[9px] font-avenir-bold text-white dark:text-black uppercase tracking-[3px]">Secure Stuttgart Node</span>
+              </div>
+              <p className="text-[8px] font-avenir-roman text-center max-w-[150px] leading-relaxed">IDENTITY VERIFIED • ACCESS GRANTED SUMMIT 2026</p>
             </div>
           </div>
 
-          {/* Intelligence Column - 68% */}
-          <div className="w-full md:w-[68%] flex-1 flex flex-col bg-black dark:bg-white md:overflow-hidden">
-            <div className="flex-1 md:overflow-y-auto custom-scrollbar px-4 py-6 md:px-12 md:py-12">
+          {/* Info Column (Right Area) - Expanded & Refined */}
+          <div className="w-full md:w-[65%] flex-1 flex flex-col bg-[#0a0a0a] dark:bg-white md:overflow-hidden relative">
+            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-10 md:px-16 md:py-16 space-y-16">
 
-              {/* Header: Identity Core */}
-              <div className="mb-10">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="px-3 py-1 bg-white/5 dark:bg-stone-50 rounded-full border border-white/5 dark:border-stone-200 flex items-center gap-2">
-                    <span className="text-sm">{participant.country.flag}</span>
-                    <span className="text-[9px] font-avenir-bold text-white/60 dark:text-black/60 uppercase tracking-widest">{participant.country.name} Node</span>
+              {/* Header Info (Desktop Only) */}
+              <div className="hidden md:block">
+                <div className="flex flex-col lg:flex-row lg:items-center gap-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="px-4 py-1.5 bg-brand-heaven-gold/5 dark:bg-stone-50 rounded-full border border-brand-heaven-gold/20 flex items-center gap-3">
+                      <span className="text-xl leading-none">{participant.country.flag}</span>
+                      <span className="text-[10px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[2px]">{participant.country.name} Node</span>
+                    </div>
                   </div>
                   {participant.nationality.code !== participant.country.code && (
-                    <div className="px-3 py-1 bg-white/5 dark:bg-stone-100 rounded-full border border-white/5 dark:border-stone-200 flex items-center gap-2">
-                      <span className="text-sm">{participant.nationality.flag}</span>
-                      <span className="text-[9px] font-avenir-bold text-white/40 dark:text-black/40 uppercase tracking-widest">Heritage</span>
+                    <div className="px-4 py-1.5 bg-white/5 dark:bg-stone-100 rounded-full border border-white/5 dark:border-stone-200 flex items-center gap-3">
+                      <span className="text-xl leading-none">{participant.nationality.flag}</span>
+                      <span className="text-[10px] font-avenir-bold text-white/40 dark:text-black/40 uppercase tracking-[2px]">Heritage</span>
                     </div>
                   )}
                 </div>
 
-                <h2 className="text-2xl md:text-4xl font-extrabold text-white dark:text-black leading-none mb-3 uppercase tracking-tighter">
+                <h2 className="text-5xl lg:text-7xl font-extrabold text-white dark:text-black leading-[0.9] mb-8 uppercase tracking-tighter">
                   {participant.name}
                 </h2>
-                <div className="flex flex-wrap items-center gap-3">
-                  <p className="text-sm md:text-lg font-didot italic text-brand-heaven-gold">{participant.title}</p>
-                  <div className="w-1 h-1 rounded-full bg-brand-heaven-gold/30" />
-                  <p className="text-[10px] md:text-xs font-avenir-bold text-white/50 dark:text-stone-400 uppercase tracking-widest">{participant.organization}</p>
+
+                <div className="flex flex-wrap items-center gap-5">
+                  <div className="flex flex-col">
+                    <span className="text-[9px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[3px] mb-1">Assignment</span>
+                    <p className="text-xl lg:text-2xl font-didot italic text-brand-heaven-gold leading-none">{participant.title}</p>
+                  </div>
+                  <div className="w-[1px] h-10 bg-white/10 hidden lg:block" />
+                  <div className="flex flex-col">
+                    <span className="text-[9px] font-avenir-bold text-white/20 dark:text-black/20 uppercase tracking-[3px] mb-1">Organization</span>
+                    <p className="text-xs lg:text-sm font-avenir-bold text-white/60 dark:text-stone-400 uppercase tracking-widest">{participant.organization}</p>
+                  </div>
                 </div>
               </div>
 
-              {/* Data Blocks */}
-              <div className="grid grid-cols-1 gap-10">
-
-                {/* Bio / Testimony */}
-                <div className="space-y-4">
-                  <h4 className="text-[10px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[4px] flex items-center gap-2">
-                    <Sparkles size={14} /> Bio
-                  </h4>
-                  <p className="text-[13px] md:text-[15px] font-avenir-roman leading-relaxed text-white/70 dark:text-stone-600 first-letter:text-3xl first-letter:font-didot first-letter:mr-2 first-letter:float-left first-letter:text-brand-heaven-gold">
-                    {participant.testimony}
+              {/* Mobile Info (Mobile Only) */}
+              <div className="md:hidden space-y-4">
+                <div className="flex flex-col">
+                  <p className="text-lg font-didot italic text-brand-heaven-gold mb-1">{participant.title}</p>
+                  <p className="text-[11px] font-avenir-bold text-white/50 dark:text-stone-400 uppercase tracking-widest leading-relaxed">
+                    {participant.organization}
+                    {participant.nationality.code !== participant.country.code && (
+                      <span className="ml-2 pl-2 border-l border-white/10 uppercase tracking-widest opacity-60">
+                        Heritage: {participant.nationality.name}
+                      </span>
+                    )}
                   </p>
                 </div>
+              </div>
 
-                {/* Communication Hub: Public Access */}
-                <div className="bg-white/5 dark:bg-stone-50 p-6 rounded-2xl border border-white/5 dark:border-stone-100 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[8px] font-avenir-bold text-brand-heaven-gold/50 uppercase tracking-widest">Secure Wire</span>
-                    <a href={`tel:${participant.phone}`} className="text-xs font-avenir-medium text-white dark:text-black hover:text-brand-heaven-gold flex items-center gap-2">
-                      <Phone size={12} className="opacity-40" /> {participant.phone || 'Communication Pending'}
-                    </a>
+              {/* Main Content Sections */}
+              <div className="grid grid-cols-1 gap-16">
+                {/* Bio / Testimony Section */}
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-brand-heaven-gold/5 flex items-center justify-center border border-brand-heaven-gold/20">
+                      <Sparkles size={20} className="text-brand-heaven-gold" />
+                    </div>
+                    <h4 className="text-[11px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[5px]">Core Intelligence</h4>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[8px] font-avenir-bold text-brand-heaven-gold/50 uppercase tracking-widest">Direct Packet</span>
-                    <a href={`mailto:${participant.email}`} className="text-xs font-avenir-medium text-white dark:text-black hover:text-brand-heaven-gold flex items-center gap-2 truncate">
-                      <Mail size={12} className="opacity-40" /> {participant.email}
-                    </a>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[8px] font-avenir-bold text-brand-heaven-gold/50 uppercase tracking-widest">Digital Nexus</span>
-                    {participant.website ? (
-                      <a href={participant.website.startsWith('http') ? participant.website : `https://${participant.website}`} target="_blank" rel="noopener noreferrer" className="text-xs font-avenir-medium text-white dark:text-black hover:text-brand-heaven-gold flex items-center gap-2">
-                        <Globe size={12} className="opacity-40" /> {participant.website.replace(/^https?:\/\//, '')}
-                      </a>
-                    ) : (
-                      <span className="text-[10px] italic text-white/20">No Website Linked</span>
-                    )}
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[8px] font-avenir-bold text-brand-heaven-gold/50 uppercase tracking-widest">Other Channels</span>
-                    <p className="text-xs font-avenir-medium text-white dark:text-black flex items-center gap-2">
-                      <Info size={12} className="opacity-40" /> {participant.otherInfo || 'N/A'}
+                  <div className="relative">
+                    <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-gradient-to-b from-brand-heaven-gold/40 via-transparent to-transparent" />
+                    <p className="text-[15px] md:text-[17px] font-avenir-roman leading-relaxed text-white/80 dark:text-stone-600 first-letter:text-5xl first-letter:font-didot first-letter:mr-3 first-letter:float-left first-letter:text-brand-heaven-gold first-letter:leading-[0.8]">
+                      {participant.testimony}
                     </p>
                   </div>
                 </div>
 
-                {/* Organization Description */}
+                {/* Mobile Promo Expansion (If available) */}
+                {participant.promoPhotoUrl && (
+                  <div className="md:hidden space-y-4">
+                    <h4 className="text-[10px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[4px]">Media Packet</h4>
+                    <img
+                      src={participant.promoPhotoUrl}
+                      className="w-full rounded-2xl border border-white/10 shadow-lg"
+                      alt="Promo"
+                      onClick={() => window.open(participant.promoPhotoUrl, '_blank')}
+                    />
+                  </div>
+                )}
+
+                {/* Comms Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/5 dark:bg-stone-100 border border-white/10 dark:border-stone-100 rounded-[2rem] overflow-hidden shadow-2xl">
+                  <div className="bg-[#0f0f0f] dark:bg-white p-8 flex flex-col gap-3 group transition-colors hover:bg-white/5 dark:hover:bg-stone-50">
+                    <span className="text-[8px] font-avenir-bold text-brand-heaven-gold/60 uppercase tracking-widest flex items-center gap-2"><Phone size={10} /> Secure Wire</span>
+                    <a href={`tel:${participant.phone}`} className="text-sm font-avenir-medium text-white dark:text-black group-hover:text-brand-heaven-gold transition-colors">{participant.phone || 'Communication Pend.'}</a>
+                  </div>
+                  <div className="bg-[#0f0f0f] dark:bg-white p-8 flex flex-col gap-3 group transition-colors hover:bg-white/5 dark:hover:bg-stone-50">
+                    <span className="text-[8px] font-avenir-bold text-brand-heaven-gold/60 uppercase tracking-widest flex items-center gap-2"><Mail size={10} /> Direct Packet</span>
+                    <a href={`mailto:${participant.email}`} className="text-sm font-avenir-medium text-white dark:text-black group-hover:text-brand-heaven-gold transition-colors truncate">{participant.email}</a>
+                  </div>
+                  <div className="bg-[#0f0f0f] dark:bg-white p-8 flex flex-col gap-3 group transition-colors hover:bg-white/5 dark:hover:bg-stone-50">
+                    <span className="text-[8px] font-avenir-bold text-brand-heaven-gold/60 uppercase tracking-widest flex items-center gap-2"><Globe size={10} /> Digital Nexus</span>
+                    {participant.website ? (
+                      <a href={participant.website.startsWith('http') ? participant.website : `https://${participant.website}`} target="_blank" rel="noopener noreferrer" className="text-sm font-avenir-medium text-white dark:text-black group-hover:text-brand-heaven-gold transition-colors">
+                        {participant.website.replace(/^https?:\/\//, '')}
+                      </a>
+                    ) : <span className="text-xs italic opacity-20">Offline</span>}
+                  </div>
+                  <div className="bg-[#0f0f0f] dark:bg-white p-8 flex flex-col gap-3 group transition-colors hover:bg-white/5 dark:hover:bg-stone-50">
+                    <span className="text-[8px] font-avenir-bold text-brand-heaven-gold/60 uppercase tracking-widest flex items-center gap-2"><Info size={10} /> Access Key</span>
+                    <p className="text-sm font-avenir-medium text-white dark:text-black">{participant.otherInfo || 'Standard Node'}</p>
+                  </div>
+                </div>
+
+                {/* Detailed Org Section */}
                 {participant.orgDescription && (
-                  <div className="space-y-4">
-                    <h4 className="text-[10px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[4px] flex items-center gap-2">
-                      <Building2 size={14} /> Organization Description
-                    </h4>
-                    <p className="text-sm md:text-base font-avenir-roman leading-relaxed text-white/90 dark:text-black/80">
+                  <div className="space-y-6 relative">
+                    <div className="absolute -left-16 right-0 h-px bg-white/5" />
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10">
+                        <Building2 size={20} className="text-brand-heaven-gold" />
+                      </div>
+                      <h4 className="text-[11px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[5px]">Organizational Matrix</h4>
+                    </div>
+                    <p className="text-[14px] md:text-[16px] font-avenir-roman leading-relaxed text-white/90 dark:text-black/80 p-8 bg-white/[0.02] dark:bg-stone-50 rounded-3xl border border-white/5">
                       {participant.orgDescription}
                     </p>
                   </div>
                 )}
-
-                {/* Legacy & Vision */}
-                {participant.orgDescription && (
-                  <div className="p-8 bg-brand-heaven-gold/5 border-l-4 border-brand-heaven-gold rounded-r-2xl">
-                    <h4 className="text-[9px] font-avenir-bold text-brand-heaven-gold uppercase tracking-[3px] mb-3 flex items-center gap-2">
-                      <Building2 size={12} /> Organizational Vision
-                    </h4>
-                    <p className="text-[14px] italic font-avenir-roman text-white/80 dark:text-black/80 leading-relaxed">
-                      "{participant.orgDescription}"
-                    </p>
-                  </div>
-                )}
               </div>
 
-              {/* Admin Secure Overlay (Only for authorized) */}
+              {/* Admin Secure Overlay */}
               {isAdmin && (
-                <div className="mt-16 pt-8 border-t border-white/10 dark:border-black/5 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Shield size={14} className="text-red-500" />
-                    <span className="text-[9px] font-avenir-bold uppercase text-red-500 tracking-[3px]">Admin Controls Enabled</span>
+                <div className="mt-20 pt-10 border-t border-white/10 dark:border-black/5 flex flex-col sm:flex-row items-center justify-between gap-6">
+                  <div className="flex items-center gap-4 py-2 px-4 bg-red-500/5 rounded-full border border-red-500/10">
+                    <Shield size={16} className="text-red-500 animate-pulse" />
+                    <span className="text-[10px] font-avenir-bold uppercase text-red-500 tracking-[4px]">Tactical Controls Active</span>
                   </div>
-                  <div className="flex gap-3">
-                    <button onClick={() => onEdit?.(participant.id)} className="px-6 py-2 bg-brand-heaven-gold/20 hover:bg-brand-heaven-gold text-brand-heaven-gold hover:text-white border border-brand-heaven-gold/30 rounded-lg text-[10px] font-avenir-bold uppercase transition-all">Edit Node</button>
-                    <button onClick={() => onDelete?.(participant.id)} className="px-6 py-2 bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white border border-red-600/30 rounded-lg text-[10px] font-avenir-bold uppercase transition-all">Terminate ID</button>
+                  <div className="flex gap-4 w-full sm:w-auto">
+                    <button onClick={() => onEdit?.(participant.id)} className="flex-1 sm:flex-initial px-8 py-3 bg-brand-heaven-gold/10 hover:bg-brand-heaven-gold text-brand-heaven-gold hover:text-white border border-brand-heaven-gold/30 rounded-xl text-[10px] font-avenir-bold uppercase transition-all shadow-glow-hover">Edit Identity</button>
+                    <button onClick={() => onDelete?.(participant.id)} className="flex-1 sm:flex-initial px-8 py-3 bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white border border-red-600/30 rounded-xl text-[10px] font-avenir-bold uppercase transition-all">Deactivate Node</button>
                   </div>
                 </div>
               )}

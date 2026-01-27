@@ -173,7 +173,7 @@ const RegistrationForm: React.FC = () => {
                                 </h3>
                                 <div className="text-xs md:text-sm text-white/60 font-avenir-roman space-y-4 leading-relaxed max-w-2xl">
                                     <p>Dear ESBS Leaders' Summit Attendees,</p>
-                                    <p>We are very excited to meet with you in only a few short weeks! To help the networking and collaboration between our attendees, we are creating a brochure featuring all of the attending leaders. Each leader will have their short bio, and promotional materials to their ministries/events. We would also kindly ask you share a key testimony with us, as we would love to select a few leaders to share at the Leaders' Summit.</p>
+                                    <p>We are creating a brochure featuring all of the attending leaders to help the networking and collaboration between our attendees. Each leader will have their short bio and promotional materials for their ministries/events. We also kindly ask you to share a key testimony with us, as we would love to select a few leaders to share at the Leaders' Summit.</p>
                                     <p>See you soon!</p>
                                 </div>
                             </div>
