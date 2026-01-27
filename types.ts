@@ -28,6 +28,7 @@ export interface Participant {
   // Normalized fields for A-Z search/sort
   searchName: string;
   searchOrg: string;
+  createdAt?: string; // ISO date string for registration tracking
 }
 
 export type ViewMode = 'directory' | 'admin' | 'registration';

@@ -249,6 +249,83 @@ const AdminConsole: React.FC<AdminConsoleProps> = ({
         <button onClick={() => onAuthorize(false)} className="px-6 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 rounded-button text-[10px] font-avenir-bold uppercase transition-all">Secure Logout</button>
       </div>
 
+      {/* Dashboard Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Total Registrations Card */}
+        <div className="bg-gradient-to-br from-brand-heaven-gold/20 to-brand-heaven-gold/5 border border-brand-heaven-gold/30 p-8 rounded-card relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-brand-heaven-gold/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-brand-heaven-gold/20 rounded-full flex items-center justify-center">
+                <ShieldCheck size={24} className="text-brand-heaven-gold" />
+              </div>
+              <div>
+                <p className="text-[9px] font-avenir-bold text-brand-heaven-gold/60 uppercase tracking-[3px]">Total Registrations</p>
+              </div>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-5xl font-avenir-bold text-brand-heaven-gold">{participants.length}</span>
+              <span className="text-sm text-white/40 dark:text-black/40 font-avenir-roman">participants</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Daily Registrations Card */}
+        <div className="bg-white/5 dark:bg-stone-50 border border-white/10 dark:border-stone-200 p-8 rounded-card">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-white/10 dark:bg-stone-100 rounded-full flex items-center justify-center">
+              <History size={24} className="text-brand-heaven-gold" />
+            </div>
+            <div>
+              <p className="text-[9px] font-avenir-bold text-brand-heaven-gold/60 uppercase tracking-[3px]">Registration Activity</p>
+            </div>
+          </div>
+          <div className="space-y-3 max-h-[140px] overflow-y-auto custom-scrollbar pr-2">
+            {(() => {
+              // Group participants by registration date
+              const dateGroups: Record<string, number> = {};
+              participants.forEach(p => {
+                const dateStr = p.createdAt
+                  ? new Date(p.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                  : 'Unknown';
+                dateGroups[dateStr] = (dateGroups[dateStr] || 0) + 1;
+              });
+
+              // Sort by date (most recent first)
+              const sortedDates = Object.entries(dateGroups)
+                .filter(([date]) => date !== 'Unknown')
+                .sort((a, b) => {
+                  const [dayA, monthA, yearA] = a[0].split('/').map(Number);
+                  const [dayB, monthB, yearB] = b[0].split('/').map(Number);
+                  return new Date(yearB, monthB - 1, dayB).getTime() - new Date(yearA, monthA - 1, dayA).getTime();
+                });
+
+              // Add unknown at the end if exists
+              if (dateGroups['Unknown']) {
+                sortedDates.push(['Unknown', dateGroups['Unknown']]);
+              }
+
+              if (sortedDates.length === 0) {
+                return (
+                  <div className="text-center py-4">
+                    <p className="text-[11px] text-white/30 dark:text-stone-400 italic">No registration data available</p>
+                  </div>
+                );
+              }
+
+              return sortedDates.map(([date, count]) => (
+                <div key={date} className="flex items-center justify-between p-3 bg-black/20 dark:bg-white border border-white/5 dark:border-stone-100 rounded-lg">
+                  <span className="text-[11px] font-avenir-bold text-white dark:text-black">{date}</span>
+                  <span className="px-3 py-1 bg-brand-heaven-gold/20 text-brand-heaven-gold text-[10px] font-avenir-bold rounded-full">
+                    {count} {count === 1 ? 'registro' : 'registros'}
+                  </span>
+                </div>
+              ));
+            })()}
+          </div>
+        </div>
+      </div>
+
       {/* Import Section */}
       <section className="bg-white/5 dark:bg-stone-50 border border-white/10 dark:border-stone-200 p-8 rounded-card relative overflow-hidden">
         {isImporting && (
